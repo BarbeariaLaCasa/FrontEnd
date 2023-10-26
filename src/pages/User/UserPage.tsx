@@ -27,6 +27,15 @@ const UserPage = () => {
   const [valorTotal, setValorTotal] = useState<number>(0);
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [mostrarAgendamentos, setMostrarAgendamentos] = useState(false);
+  const [resumoFinanceiro, setResumoFinanceiro] = useState({
+    quantidadeCortes: 0,
+    valorTotal: 0,
+    mediaPorCorte: 0,
+    formasPagamento: 0,
+  });
+  const [formasPagamento, setFormasPagamento] = useState<{
+    [forma: string]: number;
+  }>({});
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -65,24 +74,19 @@ const UserPage = () => {
     // Crie uma cópia do estado de barbeirosData para evitar mutações diretas
     const novosBarbeirosData = [...barbeirosData];
 
-    // Encontre o barbeiro clicado pelo ID
     const barbeiroClicado = novosBarbeirosData.find(
       (barbeiro) => barbeiro.idbarbeiro === barbeiroId
     );
 
     if (barbeiroClicado) {
-      // Alterne o estado selecionado do barbeiro clicado
       barbeiroClicado.selecionado = !barbeiroClicado.selecionado;
 
-      // Atualize o estado dos barbeiros com a cópia modificada
       setBarbeirosData(novosBarbeirosData);
 
       if (barbeiroClicado.selecionado) {
-        // Se o barbeiro foi selecionado, atualize o ID e o nome do barbeiro selecionado
         setBarbeiroIdSelecionado(barbeiroId);
         setNomeBarbeiroSelecionado(nome);
       } else {
-        // Se o barbeiro foi desselecionado, limpe o ID e o nome do barbeiro selecionado
         setBarbeiroIdSelecionado(null);
         setNomeBarbeiroSelecionado("");
       }
@@ -200,6 +204,55 @@ const UserPage = () => {
     }
   };
 
+  const calcularResumoFinanceiro = (userId: string) => {
+    axios
+      .get(`http://localhost:3001/agendamentos/usuario/${userId}`)
+      .then((response) => {
+        const agendamentos = response.data;
+        const quantidadeCortes = agendamentos.length;
+
+        // Calcular o valor total
+        const valorTotal = agendamentos.reduce(
+          (total: number, agendamento: { valor: string }) =>
+            total + parseFloat(agendamento.valor),
+          0
+        );
+
+        // Calcular a média por corte
+        const mediaPorCorte =
+          quantidadeCortes > 0 ? valorTotal / quantidadeCortes : 0;
+
+        // Calcular as formas de pagamento e a contagem de uso
+        const formasPagamento: { [forma: string]: number } = {};
+        agendamentos.forEach((agendamento: { forma_pagamento: any }) => {
+          const formaPagamento = agendamento.forma_pagamento;
+          formasPagamento[formaPagamento] =
+            (formasPagamento[formaPagamento] || 0) + 1;
+        });
+
+        // Atualizar os estados
+        setResumoFinanceiro({
+          quantidadeCortes,
+          valorTotal,
+          mediaPorCorte,
+          formasPagamento,
+        });
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar os agendamentos:", error);
+      });
+  };
+
+  const handleMostrarResumoFinanceiro = () => {
+    // Use o ID do usuário atual para buscar os agendamentos e calcular o resumo financeiro
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      calcularResumoFinanceiro(userId);
+    } else {
+      console.error("ID do usuário não encontrado no localStorage.");
+    }
+  };
+
   return (
     <div>
       <h1 style={{ color: "black" }}>Olá, {nomeUsuario}</h1>
@@ -207,6 +260,7 @@ const UserPage = () => {
         Solicitar Agendamento
       </button>
       <button onClick={handleMostrarAgendamentos}>Agendamentos</button>
+      <button onClick={handleMostrarResumoFinanceiro}>Resumo Financeiro</button>
       {mostrarAgendamentos && (
         <div>
           <h2>Agendamentos</h2>
@@ -353,6 +407,22 @@ const UserPage = () => {
           <p>Forma de Pagamento: {formaPagamentoSelecionada}</p>
           <p>Valor Total: R$ {valorTotal.toFixed(2)}</p>
           <button onClick={handleSalvarAgendamento}>Salvar Agendamento</button>
+        </div>
+      )}
+      {resumoFinanceiro && (
+        <div>
+          <h2>Resumo Financeiro</h2>
+          <p>Quantidade de Cortes: {resumoFinanceiro.quantidadeCortes}</p>
+          <p>Valor Total: R$ {resumoFinanceiro.valorTotal.toFixed(2)}</p>
+          <p>Média por Corte: R$ {resumoFinanceiro.mediaPorCorte.toFixed(2)}</p>
+          <h3>Formas de Pagamento</h3>
+          <ul>
+            {Object.keys(resumoFinanceiro.formasPagamento).map((forma) => (
+              <li key={forma}>
+                {forma}: {resumoFinanceiro.formasPagamento[forma]}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
