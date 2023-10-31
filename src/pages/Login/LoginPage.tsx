@@ -17,6 +17,35 @@ const LoginPage: React.FC = () => {
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
+  // Função para fazer login como administrador
+  const setAdministrador = async () => {
+    try {
+      const administradorResponse = await axios.post(
+        "http://localhost:3001/administradores/login",
+        {
+          email: email,
+          senha: senha,
+        }
+      );
+
+      if (administradorResponse.status === 200) {
+        localStorage.setItem(
+          "administradorId",
+          administradorResponse.data.administradorId
+        );
+        navigate("/administrador");
+      } else {
+        // Se não encontrar administrador, tente fazer login como usuário
+        loginUser();
+      }
+    } catch (error) {
+      console.error("Erro ao fazer login como administrador:", error);
+      // Se ocorrer um erro ao fazer login como administrador, tente como usuário
+      loginUser();
+    }
+  };
+
+  // Função para fazer login como usuário
   const loginUser = async () => {
     try {
       const usuarioResponse = await axios.post(
@@ -33,10 +62,11 @@ const LoginPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Erro ao fazer login como usuário:", error);
-      setBarbeiro();
+      setBarbeiro(); // Se não encontrar usuário, tente fazer login como barbeiro
     }
   };
 
+  // Função para fazer login como barbeiro
   const setBarbeiro = async () => {
     try {
       const barbeiroResponse = await axios.post(
@@ -59,9 +89,10 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  // Inicie o processo de login como administrador
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    loginUser();
+    setAdministrador();
   };
 
   return (

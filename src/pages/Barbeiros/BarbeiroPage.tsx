@@ -8,6 +8,17 @@ const BarbeiroPage = () => {
   const [mostrarAgendamentos, setMostrarAgendamentos] = useState(false);
   const [nomeBarbeiro, setNomeBarbeiro] = useState("");
   const [barbeiroIdLogado, setBarbeiroIdLogado] = useState<number | null>(null);
+  const [resumoFinanceiro, setResumoFinanceiro] = useState({
+    quantidadeCortes: 0,
+    valorTotal: 0,
+    mediaPorCorte: 0,
+    formasPagamento: 0,
+  });
+
+  const [formasPagamento, setFormasPagamento] = useState<{
+    [forma: string]: number;
+  }>({});
+
   const aceitarAgendamento = (agendamentoId: number) => {
     const novoStatus = "aceito";
     console.log(
@@ -83,10 +94,60 @@ const BarbeiroPage = () => {
     }
   }, []);
 
+  const calcularResumoFinanceiro = (barbeiroId: string) => {
+    axios
+      .get(`http://localhost:3001/agendamentos/barbeiro/${barbeiroId}`)
+      .then((response) => {
+        const agendamentos = response.data;
+        const quantidadeCortes = agendamentos.length;
+
+        // Calcular o valor total
+        const valorTotal = agendamentos.reduce(
+          (total: number, agendamento: { valor: string }) =>
+            total + parseFloat(agendamento.valor),
+          0
+        );
+
+        // Calcular a média por corte
+        const mediaPorCorte =
+          quantidadeCortes > 0 ? valorTotal / quantidadeCortes : 0;
+
+        // Calcular as formas de pagamento e a contagem de uso
+        const formasPagamento: { [forma: string]: number } = {};
+        agendamentos.forEach((agendamento: { forma_pagamento: any }) => {
+          const formaPagamento = agendamento.forma_pagamento;
+          formasPagamento[formaPagamento] =
+            (formasPagamento[formaPagamento] || 0) + 1;
+        });
+
+        // Atualizar os estados
+        setResumoFinanceiro({
+          quantidadeCortes,
+          valorTotal,
+          mediaPorCorte,
+          formasPagamento,
+        });
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar os agendamentos:", error);
+      });
+  };
+
+  const handleMostrarResumoFinanceiro = () => {
+    // Use o ID do usuário atual para buscar os agendamentos e calcular o resumo financeiro
+    const barbeiroId = localStorage.getItem("barbeiroId");
+    if (barbeiroId) {
+      calcularResumoFinanceiro(barbeiroId);
+    } else {
+      console.error("ID do usuário não encontrado no localStorage.");
+    }
+  };
+
   return (
     <div>
       <h1 style={{ color: "black" }}>Olá, {nomeBarbeiro}</h1>
       <button onClick={buscarAgendamentos}>Solicitações de Agendamentos</button>
+      <button onClick={handleMostrarResumoFinanceiro}>Resumo Financeiro</button>
 
       {mostrarAgendamentos && (
         <div>
@@ -111,6 +172,22 @@ const BarbeiroPage = () => {
                   Recusar
                 </button>
               </QuadradoAgendamento>
+            ))}
+          </ul>
+        </div>
+      )}
+      {resumoFinanceiro && (
+        <div>
+          <h2>Resumo Financeiro</h2>
+          <p>Quantidade de Cortes: {resumoFinanceiro.quantidadeCortes}</p>
+          <p>Valor Total: R$ {resumoFinanceiro.valorTotal.toFixed(2)}</p>
+          <p>Média por Corte: R$ {resumoFinanceiro.mediaPorCorte.toFixed(2)}</p>
+          <h3>Formas de Pagamento</h3>
+          <ul>
+            {Object.keys(resumoFinanceiro.formasPagamento).map((forma) => (
+              <li key={forma}>
+                {forma}: {resumoFinanceiro.formasPagamento[forma]}
+              </li>
             ))}
           </ul>
         </div>

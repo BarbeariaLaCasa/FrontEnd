@@ -4,6 +4,7 @@ import LoginPage from "./pages/Login/LoginPage";
 import CadastroPage from "./pages/Cadastro/CadastroPage";
 import UserPage from "./pages/User/UserPage";
 import BarbeiroPage from "./pages/Barbeiros/BarbeiroPage";
+import AdministradorPage from "./pages/Administrador/AdministradorPage";
 
 const RoutesApp = () => {
   return (
@@ -15,6 +16,7 @@ const RoutesApp = () => {
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/user" element={<UserPage />} />
         <Route path="/barbeiro" element={<BarbeiroPage />} />
+        <Route path="/administrador" element={<AdministradorPage />} />
       </Routes>
     </BrowserRouter>
   );
