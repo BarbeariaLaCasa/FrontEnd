@@ -10,8 +10,10 @@ const AdministradorPage = () => {
   const [barbeiroIdSelecionado, setBarbeiroIdSelecionado] = useState<
     number | null
   >(null);
-  const [nomeBarbeiroSelecionado, setNomeBarbeiroSelecionado] =
-    useState<string>("");
+  const [servicoEmEdicao, setServicoEmEdicao] = useState<number | null>(null);
+  const [novoValor, setNovoValor] = useState<string>("");
+  const [novaDuracao, setNovaDuracao] = useState<string>("");
+
   const [exibirFormulario, setExibirFormulario] = useState(false);
   const [novoBarbeiro, setNovoBarbeiro] = useState({
     nome: "",
@@ -22,6 +24,7 @@ const AdministradorPage = () => {
     sobre: "",
     fotos_trabalhos: [""],
   });
+  const [servicosData, setServicosData] = useState<any[]>([]);
 
   useEffect(() => {
     const administradorId = localStorage.getItem("administradorId");
@@ -71,10 +74,8 @@ const AdministradorPage = () => {
 
       if (barbeiroClicado.selecionado) {
         setBarbeiroIdSelecionado(barbeiroId);
-        setNomeBarbeiroSelecionado(nome);
       } else {
         setBarbeiroIdSelecionado(null);
-        setNomeBarbeiroSelecionado("");
       }
     }
   };
@@ -136,7 +137,6 @@ const AdministradorPage = () => {
           );
           setBarbeirosData(barbeirosAtualizados);
           setBarbeiroIdSelecionado(null);
-          setNomeBarbeiroSelecionado("");
         })
         .catch((error) => {
           console.error("Erro ao excluir barbeiro:", error);
@@ -145,10 +145,108 @@ const AdministradorPage = () => {
     }
   };
 
+  const handleServicosClick = () => {
+    axios
+      .get("http://localhost:3001/servicos") // Rota para buscar serviços
+      .then((response) => {
+        setServicosData(response.data); // Define os serviços no estado
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar os dados dos serviços:", error);
+      });
+  };
+
+  const handleEditarServico = (servicoId: number) => {
+    setServicoEmEdicao(servicoId);
+    // Preencha os estados de valor e duração com os valores existentes
+    const servicoSelecionado = servicosData.find(
+      (servico) => servico.idserviço === servicoId
+    );
+    if (servicoSelecionado) {
+      setNovoValor(servicoSelecionado.valor);
+      setNovaDuracao(
+        (servicoSelecionado.duração &&
+          servicoSelecionado.duração.minutes.toString()) ||
+          ""
+      );
+    }
+  };
+
+  const handleCancelarEdicao = () => {
+    setServicoEmEdicao(null);
+    setNovoValor("");
+    setNovaDuracao("");
+  };
+
+  const handleSalvarEdicao = () => {
+    if (servicoEmEdicao) {
+      axios
+        .put(`http://localhost:3001/servicos/${servicoEmEdicao}`, {
+          valor: novoValor,
+          duração: novaDuracao,
+        })
+        .then((response) => {
+          toast.success("Serviço atualizado com sucesso!");
+
+          handleServicosClick();
+        })
+        .catch((error) => {
+          console.error("Erro ao atualizar serviço:", error);
+          toast.error("Erro ao atualizar serviço.");
+        });
+    }
+    setServicoEmEdicao(null);
+    setNovoValor("");
+    setNovaDuracao("");
+  };
+
   return (
     <div>
       <h1 style={{ color: "black" }}>Olá, {nomeAdministrador}</h1>
       <button onClick={handleEquipeClick}>Equipe</button>
+      <button onClick={handleServicosClick}>Serviços</button>
+      {servicosData.length > 0 && (
+        <div>
+          <h2>Serviços</h2>
+          <ul>
+            {servicosData.map((servico) => (
+              <li key={servico.idserviço}>
+                {servicoEmEdicao === servico.idserviço ? (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <input
+                      type="text"
+                      value={novoValor}
+                      onChange={(e) => setNovoValor(e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      value={novaDuracao}
+                      onChange={(e) => setNovaDuracao(e.target.value)}
+                    />
+                    <button onClick={handleCancelarEdicao}>Cancelar</button>
+                    <button onClick={handleSalvarEdicao}>Salvar</button>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div>
+                      {servico.nome} - Valor: R$ {servico.valor}, Duração:{" "}
+                      {servico.duração && servico.duração
+                        ? servico.duração + " min"
+                        : "Não especificada"}
+                    </div>
+                    <button
+                      onClick={() => handleEditarServico(servico.idserviço)}
+                    >
+                      Editar
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {barbeirosData.length > 0 && (
         <div>
           <h2>Barbeiros</h2>
