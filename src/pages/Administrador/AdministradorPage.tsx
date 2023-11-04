@@ -25,6 +25,8 @@ const AdministradorPage = () => {
     fotos_trabalhos: [""],
   });
   const [servicosData, setServicosData] = useState<any[]>([]);
+  const [resumoFinanceiro, setResumoFinanceiro] = useState<any[]>([]);
+  const [barbeiroNomes, setBarbeiroNomes] = useState({});
 
   useEffect(() => {
     const administradorId = localStorage.getItem("administradorId");
@@ -200,11 +202,23 @@ const AdministradorPage = () => {
     setNovaDuracao("");
   };
 
+  const handleResumoClick = () => {
+    axios
+      .get("http://localhost:3001/resumo-financeiro")
+      .then((response) => {
+        setResumoFinanceiro(response.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar o resumo financeiro:", error);
+      });
+  };
+
   return (
     <div>
       <h1 style={{ color: "black" }}>Olá, {nomeAdministrador}</h1>
       <button onClick={handleEquipeClick}>Equipe</button>
       <button onClick={handleServicosClick}>Serviços</button>
+      <button onClick={handleResumoClick}>Resumo financeiro</button>
       {servicosData.length > 0 && (
         <div>
           <h2>Serviços</h2>
@@ -367,6 +381,37 @@ const AdministradorPage = () => {
             <br />
             <button type="submit">Adicionar Barbeiro</button>
           </form>
+        </div>
+      )}
+      {resumoFinanceiro.length > 0 && (
+        <div>
+          <h2>Resumo Financeiro</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Barbeiro</th>
+                <th>Total de Agendamentos</th>
+                <th>Média de Receita</th>
+                <th>Valor Total</th>
+                <th>Total Pix</th>
+                <th>Total Cartão</th>
+                <th>Total Dinheiro</th>
+              </tr>
+            </thead>
+            <tbody>
+              {resumoFinanceiro.map((item) => (
+                <tr key={item.barbeiro_id}>
+                  <td>{item.nomebarbeiro}</td>
+                  <td>{item.totalagendamentos}</td>
+                  <td>R$ {parseFloat(item.mediareceita).toFixed(2)}</td>
+                  <td>R$ {parseFloat(item.valortotal).toFixed(2)}</td>
+                  <td>{item.totalpix}</td>
+                  <td>{item.totalcartao}</td>
+                  <td>{item.totaldinheiro}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
