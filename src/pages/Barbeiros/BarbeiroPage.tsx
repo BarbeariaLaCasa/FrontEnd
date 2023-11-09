@@ -101,14 +101,12 @@ const BarbeiroPage = () => {
         const agendamentos = response.data;
         const quantidadeCortes = agendamentos.length;
 
-        // Calcular o valor total
         const valorTotal = agendamentos.reduce(
           (total: number, agendamento: { valor: string }) =>
             total + parseFloat(agendamento.valor),
           0
         );
 
-        // Calcular a média por corte
         const mediaPorCorte =
           quantidadeCortes > 0 ? valorTotal / quantidadeCortes : 0;
 

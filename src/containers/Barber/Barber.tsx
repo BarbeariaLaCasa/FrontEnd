@@ -14,6 +14,9 @@ import {
   ModalCloseButton,
   PhotoCarroussel,
   PhotoCarrousselDiv,
+  PhotoModal,
+  BarberNameModal,
+  SobreModal,
 } from "./BarberStyle";
 
 interface BarbeiroData {
@@ -32,13 +35,13 @@ const Barbers: FunctionComponent = () => {
   );
 
   const settings = {
-    dots: true,
     infinite: true,
-    speed: 500,
+    speed: 230,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    arrows: false,
   };
 
   useEffect(() => {
@@ -55,12 +58,27 @@ const Barbers: FunctionComponent = () => {
   const abrirModal = (barbeiro: BarbeiroData) => {
     setSelectedBarbeiro(barbeiro);
     setModalOpen(true);
+    document.body.style.overflow = "hidden";
   };
 
   const fecharModal = () => {
     setSelectedBarbeiro(null);
     setModalOpen(false);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && modalOpen) {
+        fecharModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalOpen]);
 
   return (
     <BarbersRoot>
@@ -81,12 +99,13 @@ const Barbers: FunctionComponent = () => {
       {modalOpen && selectedBarbeiro && (
         <Modal open={modalOpen}>
           <ModalContent>
-            <Photo
+            <PhotoModal
               src={selectedBarbeiro.fotoperfil}
               alt={`Foto de ${selectedBarbeiro.nome}`}
             />
-            <BarberName>{selectedBarbeiro.nome}</BarberName>
-            <p>{selectedBarbeiro.sobre}</p>
+            <ModalCloseButton onClick={fecharModal}>X</ModalCloseButton>
+            <BarberNameModal>{selectedBarbeiro.nome}</BarberNameModal>
+            <SobreModal>{selectedBarbeiro.sobre}</SobreModal>
 
             <Slider {...settings}>
               {selectedBarbeiro.fotos_trabalhos.map((foto, index) => (
@@ -95,8 +114,6 @@ const Barbers: FunctionComponent = () => {
                 </PhotoCarrousselDiv>
               ))}
             </Slider>
-
-            <ModalCloseButton onClick={fecharModal}>Fechar</ModalCloseButton>
           </ModalContent>
         </Modal>
       )}
