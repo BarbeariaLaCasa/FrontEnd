@@ -201,6 +201,11 @@ export const PResumoAgendamentoConteudo = styled.text`
   margin-left: 3px;
 `;
 
+export const DivBotoesAgendamento = styled.div`
+  margin-left: 28%;
+  margin-top: 10px;
+`;
+
 export const BotaoSalvarAgendamento = styled.button`
   margin: 10px;
   border-radius: 10px;

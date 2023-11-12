@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { QuadradoAgendamento } from "./BarbeiroPageStyle";
+import {
+  BotoesAgendamento,
+  BotoesAgendamentoAceitar,
+  BotoesAgendamentoRecusar,
+  BotoesBarbeiro,
+  DivAgendamentosBarbeiro,
+  DivBarbeiro,
+  DivBotoesBarbeiro,
+  DivFooterBarbeiro,
+  DivResumoFinanceiroBarbeiro,
+  DivUlBarbeiros,
+  H2AgendamentosBarbeiro,
+  H2ResumoFinanceiroBarbeiro,
+  H2ResumoFormaPagamentoBarbeiro,
+  LiResumoFormaPagamentoBarbeiro,
+  NomeBarbeiro,
+  PQuadroAgendamento,
+  PResumoFinanceiroBarbeiro,
+  QuadradoAgendamento,
+  TextAgendamentoConteudo,
+  TextResumoFinanceiroBarbeiro,
+  UlBarbeiros,
+  UlFormasPagamentoBarbeiro,
+} from "./BarbeiroPageStyle";
 import { Agendamento } from "../../types/types";
+import Header from "../../containers/Header/Header";
+import { DivBotoesAgendamento } from "../User/UserPageStyle";
+import Footer from "../../containers/Footer/Footer";
 
 const BarbeiroPage = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
@@ -110,7 +136,6 @@ const BarbeiroPage = () => {
         const mediaPorCorte =
           quantidadeCortes > 0 ? valorTotal / quantidadeCortes : 0;
 
-        // Calcular as formas de pagamento e a contagem de uso
         const formasPagamento: { [forma: string]: number } = {};
         agendamentos.forEach((agendamento: { forma_pagamento: any }) => {
           const formaPagamento = agendamento.forma_pagamento;
@@ -118,7 +143,6 @@ const BarbeiroPage = () => {
             (formasPagamento[formaPagamento] || 0) + 1;
         });
 
-        // Atualizar os estados
         setResumoFinanceiro({
           quantidadeCortes,
           valorTotal,
@@ -132,7 +156,6 @@ const BarbeiroPage = () => {
   };
 
   const handleMostrarResumoFinanceiro = () => {
-    // Use o ID do usuário atual para buscar os agendamentos e calcular o resumo financeiro
     const barbeiroId = localStorage.getItem("barbeiroId");
     if (barbeiroId) {
       calcularResumoFinanceiro(barbeiroId);
@@ -142,55 +165,119 @@ const BarbeiroPage = () => {
   };
 
   return (
-    <div>
-      <h1 style={{ color: "black" }}>Olá, {nomeBarbeiro}</h1>
-      <button onClick={buscarAgendamentos}>Solicitações de Agendamentos</button>
-      <button onClick={handleMostrarResumoFinanceiro}>Resumo Financeiro</button>
-
+    <DivBarbeiro>
+      <Header></Header>
+      <NomeBarbeiro>Olá, {nomeBarbeiro}</NomeBarbeiro>
+      <DivBotoesBarbeiro>
+        <BotoesBarbeiro onClick={buscarAgendamentos}>
+          Solicitações de Agendamentos
+        </BotoesBarbeiro>
+        <BotoesBarbeiro onClick={handleMostrarResumoFinanceiro}>
+          Resumo Financeiro
+        </BotoesBarbeiro>
+      </DivBotoesBarbeiro>
       {mostrarAgendamentos && (
-        <div>
-          <h2>Agendamentos:</h2>
-          <ul>
-            {agendamentos.map((agendamento, index) => (
-              <QuadradoAgendamento key={index}>
-                <p>ID: {agendamento.barbeiro_id}</p>
-                <p>Hora: {agendamento.hora}</p>
-                <p>Data: {agendamento.data}</p>
-                <p>Valor: {agendamento.valor}</p>
-                <p>Forma de Pagamento: {agendamento.forma_pagamento}</p>
-                <p>Status: {agendamento.status}</p>
-                <button
-                  onClick={() => aceitarAgendamento(agendamento.idagendamentos)}
-                >
-                  Aceitar
-                </button>
-                <button
-                  onClick={() => recusarAgendamento(agendamento.idagendamentos)}
-                >
-                  Recusar
-                </button>
-              </QuadradoAgendamento>
-            ))}
-          </ul>
-        </div>
+        <DivAgendamentosBarbeiro>
+          <H2AgendamentosBarbeiro>Agendamentos:</H2AgendamentosBarbeiro>
+          <DivUlBarbeiros>
+            <UlBarbeiros>
+              {agendamentos.map((agendamento, index) => (
+                <QuadradoAgendamento key={index}>
+                  <PQuadroAgendamento>
+                    Hora:{" "}
+                    <TextAgendamentoConteudo>
+                      {agendamento.hora}
+                    </TextAgendamentoConteudo>
+                  </PQuadroAgendamento>
+                  <PQuadroAgendamento>
+                    Data:{" "}
+                    <TextAgendamentoConteudo>
+                      {agendamento.data}
+                    </TextAgendamentoConteudo>
+                  </PQuadroAgendamento>
+                  <PQuadroAgendamento>
+                    Valor:
+                    <TextAgendamentoConteudo>
+                      R$ {agendamento.valor}
+                    </TextAgendamentoConteudo>
+                  </PQuadroAgendamento>
+                  <PQuadroAgendamento>
+                    Forma de Pagamento:{" "}
+                    <TextAgendamentoConteudo>
+                      {agendamento.forma_pagamento}
+                    </TextAgendamentoConteudo>
+                  </PQuadroAgendamento>
+                  <PQuadroAgendamento>
+                    Status:{" "}
+                    <TextAgendamentoConteudo>
+                      {agendamento.status}
+                    </TextAgendamentoConteudo>
+                  </PQuadroAgendamento>
+                  <DivBotoesAgendamento>
+                    <BotoesAgendamentoAceitar
+                      onClick={() =>
+                        aceitarAgendamento(agendamento.idagendamentos)
+                      }
+                    >
+                      Aceitar
+                    </BotoesAgendamentoAceitar>
+                    <BotoesAgendamentoRecusar
+                      onClick={() =>
+                        recusarAgendamento(agendamento.idagendamentos)
+                      }
+                    >
+                      Recusar
+                    </BotoesAgendamentoRecusar>
+                  </DivBotoesAgendamento>
+                </QuadradoAgendamento>
+              ))}
+            </UlBarbeiros>
+          </DivUlBarbeiros>
+        </DivAgendamentosBarbeiro>
       )}
       {resumoFinanceiro && (
-        <div>
-          <h2>Resumo Financeiro</h2>
-          <p>Quantidade de Cortes: {resumoFinanceiro.quantidadeCortes}</p>
-          <p>Valor Total: R$ {resumoFinanceiro.valorTotal.toFixed(2)}</p>
-          <p>Média por Corte: R$ {resumoFinanceiro.mediaPorCorte.toFixed(2)}</p>
-          <h3>Formas de Pagamento</h3>
-          <ul>
+        <DivResumoFinanceiroBarbeiro>
+          <H2ResumoFinanceiroBarbeiro>
+            Resumo Financeiro
+          </H2ResumoFinanceiroBarbeiro>
+          <PResumoFinanceiroBarbeiro>
+            Quantidade de Cortes:{" "}
+            <TextResumoFinanceiroBarbeiro>
+              {resumoFinanceiro.quantidadeCortes}
+            </TextResumoFinanceiroBarbeiro>
+          </PResumoFinanceiroBarbeiro>
+          <PResumoFinanceiroBarbeiro>
+            Valor Total:{" "}
+            <TextResumoFinanceiroBarbeiro>
+              R$
+              {resumoFinanceiro.valorTotal.toFixed(2)}
+            </TextResumoFinanceiroBarbeiro>
+          </PResumoFinanceiroBarbeiro>
+          <PResumoFinanceiroBarbeiro>
+            Média por Corte:
+            <TextResumoFinanceiroBarbeiro>
+              R$ {resumoFinanceiro.mediaPorCorte.toFixed(2)}
+            </TextResumoFinanceiroBarbeiro>
+          </PResumoFinanceiroBarbeiro>
+          <H2ResumoFormaPagamentoBarbeiro>
+            Formas de Pagamento
+          </H2ResumoFormaPagamentoBarbeiro>
+          <UlFormasPagamentoBarbeiro>
             {Object.keys(resumoFinanceiro.formasPagamento).map((forma) => (
-              <li key={forma}>
-                {forma}: {resumoFinanceiro.formasPagamento[forma]}
-              </li>
+              <LiResumoFormaPagamentoBarbeiro key={forma}>
+                {forma}:{" "}
+                <TextResumoFinanceiroBarbeiro>
+                  {resumoFinanceiro.formasPagamento[forma]}
+                </TextResumoFinanceiroBarbeiro>
+              </LiResumoFormaPagamentoBarbeiro>
             ))}
-          </ul>
-        </div>
+          </UlFormasPagamentoBarbeiro>
+        </DivResumoFinanceiroBarbeiro>
       )}
-    </div>
+      <DivFooterBarbeiro>
+        <Footer></Footer>
+      </DivFooterBarbeiro>
+    </DivBarbeiro>
   );
 };
 
