@@ -6,7 +6,7 @@ export const FooterRoot = styled.div`
   width: 100%;
   text-align: center;
   font-size: 18px;
-  background-color: ${colorsVariables.black};
+  background-color: ${colorsVariables.lightGrey};
   padding: 20px;
 `;
 
@@ -14,6 +14,7 @@ export const SocialLinks = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
+  color: inherit;
 `;
 
 export const SocialLinkItem = styled.li`

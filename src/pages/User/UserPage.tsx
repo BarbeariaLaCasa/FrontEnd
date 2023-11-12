@@ -1,9 +1,49 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { AgendamentoBox, AgendamentoContainer } from "./UserPageStyle";
+import {
+  AgendamentoBox,
+  AgendamentoContainer,
+  BotaoSalvarAgendamento,
+  Botoes,
+  CheckboxLabelServico,
+  DivAgendamentos,
+  DivBarbeiro,
+  DivBotoes,
+  DivDataHora,
+  DivFooter,
+  DivFormaPagamento,
+  DivResumoAgendamento,
+  DivResumoFinanceiro,
+  DivServico,
+  DivUser,
+  H2Agendamentos,
+  H2Barbeiros,
+  H2DataHora,
+  H2FormaPagamento,
+  H2ResumoAgendamento,
+  H2ResumoFinanceiro,
+  H2ResumoFormaPagamento,
+  H2Servico,
+  LabelFormaPagamento,
+  LiBarbeiros,
+  LiResumoFormaPagamento,
+  NomeBarbeiro,
+  NomeUsuario,
+  PAgendamentos,
+  PResumoAgendamento,
+  PResumoAgendamentoConteudo,
+  PResumoFinanceiro,
+  StyledDatePicker,
+  TextAgendamentoConteudo,
+  TextResumoFinanceiro,
+  TextResumoFormaPagamento,
+  UlBarbeiros,
+  UlFormasPagamento,
+} from "./UserPageStyle";
 import { Agendamento } from "../../types/types";
+import Header from "../../containers/Header/Header";
+import Footer from "../../containers/Footer/Footer";
 
 const UserPage = () => {
   const [nomeUsuario, setNomeUsuario] = useState("");
@@ -31,11 +71,12 @@ const UserPage = () => {
     quantidadeCortes: 0,
     valorTotal: 0,
     mediaPorCorte: 0,
-    formasPagamento: 0,
+    formasPagamento: {} as { [forma: string]: number },
   });
   const [formasPagamento, setFormasPagamento] = useState<{
     [forma: string]: number;
   }>({});
+  const [botaoAtivo, setBotaoAtivo] = useState<string | null>(null);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -61,17 +102,17 @@ const UserPage = () => {
       .then((response) => {
         const barbeiros = response.data.map((barbeiro: any) => ({
           ...barbeiro,
-          selecionado: true, // Defina todos os barbeiros como selecionados inicialmente
+          selecionado: true,
         }));
         setBarbeirosData(barbeiros);
       })
       .catch((error) => {
         console.error("Erro ao buscar os dados dos barbeiros:", error);
       });
+    setBotaoAtivo("solicitarAgendamento");
   };
 
   const handleSelecionarBarbeiro = (barbeiroId: number, nome: string) => {
-    // Crie uma cópia do estado de barbeirosData para evitar mutações diretas
     const novosBarbeirosData = [...barbeirosData];
 
     const barbeiroClicado = novosBarbeirosData.find(
@@ -95,20 +136,16 @@ const UserPage = () => {
 
   const handleServicoSelecionado = (servico: string) => {
     if (servicosSelecionados.includes(servico)) {
-      // Se o serviço já estiver na lista de serviços selecionados, remova-o
       setServicosSelecionados(
         servicosSelecionados.filter((s) => s !== servico)
       );
-      // Também limpe a data selecionada quando o serviço é desselecionado
       setDataSelecionada(null);
     } else {
-      // Caso contrário, adicione-o à lista de serviços selecionados
       setServicosSelecionados([...servicosSelecionados, servico]);
     }
   };
 
   useEffect(() => {
-    // Mapear os tempos estimados para cada serviço
     const temposEstimados: { [key: string]: number } = {
       barba: 30,
       cabelo: 30,
@@ -136,8 +173,8 @@ const UserPage = () => {
 
   const handleFormaPagamentoSelecionada = (forma: string) => {
     setFormaPagamentoSelecionada(forma);
+    setFormaPagamento(forma);
 
-    // Mapeie os preços dos serviços selecionados
     const precosServicos: { [key: string]: number } = {
       barba: 10,
       cabelo: 30,
@@ -202,6 +239,8 @@ const UserPage = () => {
     } else {
       console.error("ID do usuário não encontrado no localStorage.");
     }
+    console.log("Clicou em Solicitar Agendamento");
+    setBotaoAtivo("mostrarAgendamentos");
   };
 
   const calcularResumoFinanceiro = (userId: string) => {
@@ -211,18 +250,14 @@ const UserPage = () => {
         const agendamentos = response.data;
         const quantidadeCortes = agendamentos.length;
 
-        // Calcular o valor total
         const valorTotal = agendamentos.reduce(
           (total: number, agendamento: { valor: string }) =>
             total + parseFloat(agendamento.valor),
           0
         );
 
-        // Calcular a média por corte
         const mediaPorCorte =
           quantidadeCortes > 0 ? valorTotal / quantidadeCortes : 0;
-
-        // Calcular as formas de pagamento e a contagem de uso
         const formasPagamento: { [forma: string]: number } = {};
         agendamentos.forEach((agendamento: { forma_pagamento: any }) => {
           const formaPagamento = agendamento.forma_pagamento;
@@ -230,7 +265,6 @@ const UserPage = () => {
             (formasPagamento[formaPagamento] || 0) + 1;
         });
 
-        // Atualizar os estados
         setResumoFinanceiro({
           quantidadeCortes,
           valorTotal,
@@ -244,56 +278,78 @@ const UserPage = () => {
   };
 
   const handleMostrarResumoFinanceiro = () => {
-    // Use o ID do usuário atual para buscar os agendamentos e calcular o resumo financeiro
     const userId = localStorage.getItem("userId");
     if (userId) {
       calcularResumoFinanceiro(userId);
     } else {
       console.error("ID do usuário não encontrado no localStorage.");
     }
+    setBotaoAtivo("mostrarResumoFinanceiro");
   };
 
   return (
-    <div>
-      <h1 style={{ color: "black" }}>Olá, {nomeUsuario}</h1>
-      <button onClick={handleSolicitarAgendamento}>
-        Solicitar Agendamento
-      </button>
-      <button onClick={handleMostrarAgendamentos}>Agendamentos</button>
-      <button onClick={handleMostrarResumoFinanceiro}>Resumo Financeiro</button>
-      {mostrarAgendamentos && (
-        <div>
-          <h2>Agendamentos</h2>
+    <DivUser>
+      <Header />
+      <NomeUsuario>Olá, {nomeUsuario}</NomeUsuario>
+      <DivBotoes>
+        <Botoes onClick={handleSolicitarAgendamento}>
+          Solicitar Agendamento
+        </Botoes>
+        <Botoes onClick={handleMostrarAgendamentos}>Agendamentos</Botoes>
+        <Botoes onClick={handleMostrarResumoFinanceiro}>
+          Resumo Financeiro
+        </Botoes>
+      </DivBotoes>
+      {botaoAtivo === "mostrarAgendamentos" && (
+        <DivAgendamentos>
+          <H2Agendamentos>Agendamentos</H2Agendamentos>
           <AgendamentoContainer>
             {agendamentos.map((agendamento) => (
               <AgendamentoBox key={agendamento.id}>
-                <p>Barbeiro: {agendamento.barbeiro}</p>
-                <p>Data/Hora: {agendamento.data}</p>
-                <p>Valor Total: R$ {agendamento.valor}</p>
-                <p>Status: {agendamento.status}</p>
+                <PAgendamentos>
+                  Barbeiro:{" "}
+                  <TextAgendamentoConteudo>
+                    {agendamento.barbeiro}
+                  </TextAgendamentoConteudo>
+                </PAgendamentos>
+                <PAgendamentos>
+                  Data/Hora:{" "}
+                  <TextAgendamentoConteudo>
+                    {agendamento.data}
+                  </TextAgendamentoConteudo>
+                </PAgendamentos>
+                <PAgendamentos>
+                  Valor Total:
+                  <TextAgendamentoConteudo>
+                    R$ {agendamento.valor}
+                  </TextAgendamentoConteudo>
+                </PAgendamentos>
+                <PAgendamentos>
+                  Status:{" "}
+                  <TextAgendamentoConteudo>
+                    {agendamento.status}
+                  </TextAgendamentoConteudo>
+                </PAgendamentos>
               </AgendamentoBox>
             ))}
           </AgendamentoContainer>
-        </div>
+        </DivAgendamentos>
       )}
-      {barbeirosData.length > 0 && (
-        <div>
-          <h2>Barbeiros</h2>
-          <ul style={{ listStyle: "none", display: "flex" }}>
+      {botaoAtivo === "solicitarAgendamento" && (
+        <DivBarbeiro>
+          <H2Barbeiros>Barbeiros</H2Barbeiros>
+          <UlBarbeiros>
             {barbeirosData.map((barbeiro) => (
-              <li
-                key={barbeiro.idbarbeiro}
-                style={{ marginRight: "20px", cursor: "pointer" }}
-              >
+              <LiBarbeiros key={barbeiro.idbarbeiro}>
                 <div
                   className="barbeiro-foto"
                   style={{
                     border:
                       barbeiroIdSelecionado === barbeiro.idbarbeiro
-                        ? "2px solid gold"
-                        : "2px solid black",
-                    width: "100px",
-                    height: "100px",
+                        ? "3px solid #A66F0A"
+                        : "3px solid black",
+                    width: "110px",
+                    height: "110px",
                     borderRadius: "50%",
                     overflow: "hidden",
                   }}
@@ -311,48 +367,48 @@ const UserPage = () => {
                     }}
                   />
                 </div>
-                <p>{barbeiro.nome}</p>
-              </li>
+                <NomeBarbeiro>{barbeiro.nome}</NomeBarbeiro>
+              </LiBarbeiros>
             ))}
-          </ul>
-        </div>
+          </UlBarbeiros>
+        </DivBarbeiro>
       )}
       {barbeiroIdSelecionado !== null && (
-        <div>
-          <h2>Serviços</h2>
-          <label>
+        <DivServico>
+          <H2Servico>Serviços</H2Servico>
+          <CheckboxLabelServico>
             <input
               type="checkbox"
-              value="barba"
-              checked={servicosSelecionados.includes("barba")}
-              onChange={() => handleServicoSelecionado("barba")}
+              value="Barba"
+              checked={servicosSelecionados.includes("Barba")}
+              onChange={() => handleServicoSelecionado("Barba")}
             />
             Barba
-          </label>
-          <label>
+          </CheckboxLabelServico>
+          <CheckboxLabelServico>
             <input
               type="checkbox"
-              value="cabelo"
-              checked={servicosSelecionados.includes("cabelo")}
-              onChange={() => handleServicoSelecionado("cabelo")}
+              value="Cabelo"
+              checked={servicosSelecionados.includes("Cabelo")}
+              onChange={() => handleServicoSelecionado("Cabelo")}
             />
             Cabelo
-          </label>
-          <label>
+          </CheckboxLabelServico>
+          <CheckboxLabelServico>
             <input
               type="checkbox"
-              value="sobrancelha"
-              checked={servicosSelecionados.includes("sobrancelha")}
-              onChange={() => handleServicoSelecionado("sobrancelha")}
+              value="Sobrancelha"
+              checked={servicosSelecionados.includes("Sobrancelha")}
+              onChange={() => handleServicoSelecionado("Sobrancelha")}
             />
             Sobrancelha
-          </label>
-        </div>
+          </CheckboxLabelServico>
+        </DivServico>
       )}
       {servicosSelecionados.length > 0 && (
-        <div>
-          <h2>Selecione a Data e Hora</h2>
-          <DatePicker
+        <DivDataHora>
+          <H2DataHora>Selecione a Data e Hora</H2DataHora>
+          <StyledDatePicker
             selected={dataSelecionada}
             onChange={(date) => setDataSelecionada(date)}
             showTimeSelect
@@ -362,70 +418,128 @@ const UserPage = () => {
             dateFormat="dd/MM/yyyy HH:mm"
             placeholderText="Selecione a data e hora"
           />
-        </div>
+        </DivDataHora>
       )}
       {dataSelecionada !== null && (
-        <div>
-          <h2>Forma de Pagamento</h2>
-          <label>
+        <DivFormaPagamento>
+          <H2FormaPagamento>Forma de Pagamento</H2FormaPagamento>
+          <LabelFormaPagamento>
             <input
               type="radio"
               value="cartao"
               checked={formaPagamento === "cartao"}
-              onChange={() => handleFormaPagamentoSelecionada("cartao")}
+              onChange={() => handleFormaPagamentoSelecionada("Cartão")}
             />
             Cartão de Crédito/Débito
-          </label>
-          <label>
+          </LabelFormaPagamento>
+          <LabelFormaPagamento>
             <input
               type="radio"
               value="pix"
               checked={formaPagamento === "pix"}
-              onChange={() => handleFormaPagamentoSelecionada("pix")}
+              onChange={() => handleFormaPagamentoSelecionada("Pix")}
             />
             PIX
-          </label>
-          <label>
+          </LabelFormaPagamento>
+          <LabelFormaPagamento>
             <input
               type="radio"
               value="dinheiro"
               checked={formaPagamento === "dinheiro"}
-              onChange={() => handleFormaPagamentoSelecionada("dinheiro")}
+              onChange={() => handleFormaPagamentoSelecionada("Dinheiro")}
             />
             Dinheiro
-          </label>
-        </div>
+          </LabelFormaPagamento>
+        </DivFormaPagamento>
       )}
       {formaPagamentoSelecionada && (
-        <div>
-          <h2>Resumo do Agendamento</h2>
-          <p>Cliente: {nomeUsuario}</p>
-          <p>Barbeiro: {nomeBarbeiroSelecionado}</p>
-          <p>Serviços: {servicosSelecionados.join(", ")}</p>
-          <p>Data/Hora Início: {horarioInicio?.toLocaleString()}</p>
-          <p>Data/Hora Término: {horarioFinal?.toLocaleString()}</p>
-          <p>Forma de Pagamento: {formaPagamentoSelecionada}</p>
-          <p>Valor Total: R$ {valorTotal.toFixed(2)}</p>
-          <button onClick={handleSalvarAgendamento}>Salvar Agendamento</button>
-        </div>
+        <DivResumoAgendamento>
+          <H2ResumoAgendamento>Resumo do Agendamento</H2ResumoAgendamento>
+          <PResumoAgendamento>
+            Cliente:{" "}
+            <PResumoAgendamentoConteudo>
+              {nomeUsuario}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <PResumoAgendamento>
+            Barbeiro:{" "}
+            <PResumoAgendamentoConteudo>
+              {nomeBarbeiroSelecionado}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <PResumoAgendamento>
+            Serviços:{" "}
+            <PResumoAgendamentoConteudo>
+              {servicosSelecionados.join(", ")}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <PResumoAgendamento>
+            Data/Hora Início:{" "}
+            <PResumoAgendamentoConteudo>
+              {horarioInicio?.toLocaleString()}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <PResumoAgendamento>
+            Data/Hora Término:{" "}
+            <PResumoAgendamentoConteudo>
+              {horarioFinal?.toLocaleString()}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <PResumoAgendamento>
+            Forma de Pagamento:{" "}
+            <PResumoAgendamentoConteudo>
+              {formaPagamentoSelecionada}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <PResumoAgendamento>
+            Valor Total:
+            <PResumoAgendamentoConteudo>
+              R$ {valorTotal.toFixed(2)}
+            </PResumoAgendamentoConteudo>
+          </PResumoAgendamento>
+          <BotaoSalvarAgendamento onClick={handleSalvarAgendamento}>
+            Salvar Agendamento
+          </BotaoSalvarAgendamento>
+        </DivResumoAgendamento>
       )}
-      {resumoFinanceiro && (
-        <div>
-          <h2>Resumo Financeiro</h2>
-          <p>Quantidade de Cortes: {resumoFinanceiro.quantidadeCortes}</p>
-          <p>Valor Total: R$ {resumoFinanceiro.valorTotal.toFixed(2)}</p>
-          <p>Média por Corte: R$ {resumoFinanceiro.mediaPorCorte.toFixed(2)}</p>
-          <h3>Formas de Pagamento</h3>
-          <ul>
+      {botaoAtivo === "mostrarResumoFinanceiro" && (
+        <DivResumoFinanceiro>
+          <H2ResumoFinanceiro>Resumo Financeiro</H2ResumoFinanceiro>
+          <PResumoFinanceiro>
+            Quantidade de Cortes:{" "}
+            <TextResumoFinanceiro>
+              {resumoFinanceiro.quantidadeCortes}
+            </TextResumoFinanceiro>
+          </PResumoFinanceiro>
+          <PResumoFinanceiro>
+            Valor Total:{" "}
+            <TextResumoFinanceiro>
+              R$ {resumoFinanceiro.valorTotal.toFixed(2)}
+            </TextResumoFinanceiro>{" "}
+          </PResumoFinanceiro>
+          <PResumoFinanceiro>
+            Média por Corte:{" "}
+            <TextResumoFinanceiro>
+              R$ {resumoFinanceiro.mediaPorCorte.toFixed(2)}
+            </TextResumoFinanceiro>
+          </PResumoFinanceiro>
+          <H2ResumoFormaPagamento>Formas de Pagamento</H2ResumoFormaPagamento>
+          <UlFormasPagamento>
             {Object.keys(resumoFinanceiro.formasPagamento).map((forma) => (
-              <li key={forma}>
-                {forma}: {resumoFinanceiro.formasPagamento[forma]}
-              </li>
+              <LiResumoFormaPagamento key={forma}>
+                {forma}:{" "}
+                <TextResumoFormaPagamento>
+                  {resumoFinanceiro.formasPagamento[forma]}
+                </TextResumoFormaPagamento>
+              </LiResumoFormaPagamento>
             ))}
-          </ul>
-        </div>
+          </UlFormasPagamento>
+        </DivResumoFinanceiro>
       )}
-    </div>
+      <DivFooter>
+        <Footer />
+      </DivFooter>
+    </DivUser>
   );
 };
 

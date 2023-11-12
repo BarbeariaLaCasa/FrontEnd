@@ -70,9 +70,7 @@ const RegisterPage = () => {
 
       if (response.status === 201) {
         setRegistroSucesso(true);
-        setTimeout(() => {
-          navigate("/login", { replace: true });
-        }, 5000);
+        navigate("/login", { replace: true });
       } else {
         console.error("Erro ao cadastrar o usuário.");
         window.alert(

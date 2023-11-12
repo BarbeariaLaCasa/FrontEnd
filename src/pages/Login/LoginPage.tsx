@@ -17,7 +17,10 @@ const LoginPage: React.FC = () => {
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
-  // Função para fazer login como administrador
+  const linkStyle = {
+    color: "inherit",
+  };
+
   const setAdministrador = async () => {
     try {
       const administradorResponse = await axios.post(
@@ -35,17 +38,14 @@ const LoginPage: React.FC = () => {
         );
         navigate("/administrador");
       } else {
-        // Se não encontrar administrador, tente fazer login como usuário
         loginUser();
       }
     } catch (error) {
       console.error("Erro ao fazer login como administrador:", error);
-      // Se ocorrer um erro ao fazer login como administrador, tente como usuário
       loginUser();
     }
   };
 
-  // Função para fazer login como usuário
   const loginUser = async () => {
     try {
       const usuarioResponse = await axios.post(
@@ -62,11 +62,10 @@ const LoginPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Erro ao fazer login como usuário:", error);
-      setBarbeiro(); // Se não encontrar usuário, tente fazer login como barbeiro
+      setBarbeiro();
     }
   };
 
-  // Função para fazer login como barbeiro
   const setBarbeiro = async () => {
     try {
       const barbeiroResponse = await axios.post(
@@ -89,7 +88,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Inicie o processo de login como administrador
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAdministrador();
@@ -115,7 +113,10 @@ const LoginPage: React.FC = () => {
         />
         <LoginButton type="submit">Acessar</LoginButton>
         <SignUpLink>
-          Não é cadastrado? <Link to="/cadastro">Cadastre-se aqui</Link>
+          Não é cadastrado?{" "}
+          <Link to="/cadastro" style={linkStyle}>
+            Cadastre-se aqui
+          </Link>
         </SignUpLink>
       </LoginForm>
     </LoginPageWrapper>

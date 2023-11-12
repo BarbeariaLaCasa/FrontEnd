@@ -58,12 +58,15 @@ const Barbers: FunctionComponent = () => {
   const abrirModal = (barbeiro: BarbeiroData) => {
     setSelectedBarbeiro(barbeiro);
     setModalOpen(true);
+
     document.body.style.overflow = "hidden";
   };
 
   const fecharModal = () => {
     setSelectedBarbeiro(null);
     setModalOpen(false);
+
+    document.body.style.overflow = "auto";
   };
 
   useEffect(() => {

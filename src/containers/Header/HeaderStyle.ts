@@ -27,6 +27,7 @@ export const Login = styled.b`
   font-size: 1em;
   color: ${colorsVariables.goldMedium};
 `;
+
 export const CabecalhoRoot = styled.div`
   position: relative;
   width: 100%;
