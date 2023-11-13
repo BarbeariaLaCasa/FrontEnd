@@ -3,6 +3,51 @@ import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "../../containers/Header/Header";
+import {
+  BotaoAdicionarBarbeiroAdministrador,
+  BotaoAdicionarFotoBarbeiro,
+  BotaoAdicionarNovoBarbeiro,
+  BotaoCancelarEdicao,
+  BotaoEditarServico,
+  BotaoExcluirBarbeiroAdministrador,
+  BotaoSalvarEdicao,
+  Botoes,
+  DivAdministrador,
+  DivBotaoEdicao,
+  DivBotaoServico,
+  DivBotoes,
+  DivEdicao,
+  DivEquipeAdministrador,
+  DivFooterAdministrador,
+  DivFormulario,
+  DivResumoFinanceiroAdministrador,
+  DivServicos,
+  DivServicosExibicao,
+  H2BarbeirosAdministrador,
+  H2ResumoFinanceiroAdministrador,
+  H2Servicos,
+  ImgBarbeiroAdministrador,
+  InputAdicaoBarbeiro,
+  InputEdicao,
+  LabelAdicaoBarbeiro,
+  LiBarbeirosAdministrador,
+  LiServicos,
+  NomeAdministrador,
+  NomeBarbeiroAdministrador,
+  THeadResumoAdministrador,
+  TabelaResumoAdministrador,
+  TdResumoAdministrador,
+  TextAreaAdicaoBarbeiro,
+  TextConteudoServico,
+  TextServicoNome,
+  TexteEdicao,
+  ThResumoAdministrador,
+  TrResumoAdministrador,
+  UlBarbeirosAdministrador,
+  UlServicos,
+} from "./AdministradorPageStyle";
+import Footer from "../../containers/Footer/Footer";
 
 const AdministradorPage = () => {
   const [nomeAdministrador, setNomeAdministrador] = useState("");
@@ -214,70 +259,82 @@ const AdministradorPage = () => {
   };
 
   return (
-    <div>
-      <h1 style={{ color: "black" }}>Olá, {nomeAdministrador}</h1>
-      <button onClick={handleEquipeClick}>Equipe</button>
-      <button onClick={handleServicosClick}>Serviços</button>
-      <button onClick={handleResumoClick}>Resumo financeiro</button>
+    <DivAdministrador>
+      <Header></Header>
+      <NomeAdministrador>Olá, {nomeAdministrador}</NomeAdministrador>
+      <DivBotoes>
+        <Botoes onClick={handleEquipeClick}>Equipe</Botoes>
+        <Botoes onClick={handleServicosClick}>Serviços</Botoes>
+        <Botoes onClick={handleResumoClick}>Resumo financeiro</Botoes>
+      </DivBotoes>
       {servicosData.length > 0 && (
-        <div>
-          <h2>Serviços</h2>
-          <ul>
+        <DivServicos>
+          <H2Servicos>Serviços</H2Servicos>
+          <UlServicos>
             {servicosData.map((servico) => (
-              <li key={servico.idserviço}>
+              <LiServicos key={servico.idserviço}>
                 {servicoEmEdicao === servico.idserviço ? (
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <input
+                  <DivEdicao>
+                    <TexteEdicao>Novo Valor:</TexteEdicao>
+                    <InputEdicao
                       type="text"
                       value={novoValor}
                       onChange={(e) => setNovoValor(e.target.value)}
                     />
-                    <input
+                    <TexteEdicao>Nova Duração:</TexteEdicao>
+                    <InputEdicao
                       type="text"
                       value={novaDuracao}
                       onChange={(e) => setNovaDuracao(e.target.value)}
                     />
-                    <button onClick={handleCancelarEdicao}>Cancelar</button>
-                    <button onClick={handleSalvarEdicao}>Salvar</button>
-                  </div>
+                    <DivBotaoEdicao>
+                      <BotaoCancelarEdicao onClick={handleCancelarEdicao}>
+                        Cancelar
+                      </BotaoCancelarEdicao>
+                      <BotaoSalvarEdicao onClick={handleSalvarEdicao}>
+                        Salvar
+                      </BotaoSalvarEdicao>
+                    </DivBotaoEdicao>
+                  </DivEdicao>
                 ) : (
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <div>
-                      {servico.nome} - Valor: R$ {servico.valor}, Duração:{" "}
+                  <DivServicosExibicao>
+                    <TextServicoNome>{servico.nome} - </TextServicoNome>{" "}
+                    <TextConteudoServico>
+                      Valor: R$ {servico.valor}, Duração:{" "}
                       {servico.duração && servico.duração
                         ? servico.duração + " min"
                         : "Não especificada"}
-                    </div>
-                    <button
-                      onClick={() => handleEditarServico(servico.idserviço)}
-                    >
-                      Editar
-                    </button>
-                  </div>
+                    </TextConteudoServico>
+                    <DivBotaoServico>
+                      <BotaoEditarServico
+                        onClick={() => handleEditarServico(servico.idserviço)}
+                      >
+                        Editar
+                      </BotaoEditarServico>
+                    </DivBotaoServico>
+                  </DivServicosExibicao>
                 )}
-              </li>
+              </LiServicos>
             ))}
-          </ul>
-        </div>
+          </UlServicos>
+        </DivServicos>
       )}
 
       {barbeirosData.length > 0 && (
-        <div>
-          <h2>Barbeiros</h2>
-          <ul style={{ listStyle: "none", display: "flex" }}>
+        <DivEquipeAdministrador>
+          <H2BarbeirosAdministrador>Barbeiros</H2BarbeirosAdministrador>
+          <UlBarbeirosAdministrador>
             {barbeirosData.map((barbeiro) => (
-              <li
-                key={barbeiro.idbarbeiro}
-                style={{ marginRight: "20px", cursor: "pointer" }}
-              >
+              <LiBarbeirosAdministrador key={barbeiro.idbarbeiro}>
                 <div
                   className="barbeiro-foto"
                   style={{
                     border:
                       barbeiroIdSelecionado === barbeiro.idbarbeiro
-                        ? "2px solid gold"
-                        : "2px solid black",
+                        ? "3px solid #A66F0A"
+                        : "3px solid #A66F0A",
                     width: "100px",
+                    margin: "5px",
                     height: "100px",
                     borderRadius: "50%",
                     overflow: "hidden",
@@ -286,34 +343,32 @@ const AdministradorPage = () => {
                     handleSelecionarBarbeiro(barbeiro.idbarbeiro, barbeiro.nome)
                   }
                 >
-                  <img
+                  <ImgBarbeiroAdministrador
                     src={barbeiro.fotoperfil}
                     alt={`Foto de ${barbeiro.nome}`}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
                   />
                 </div>
-                <p>{barbeiro.nome}</p>
-                <button
+                <NomeBarbeiroAdministrador>
+                  {barbeiro.nome}
+                </NomeBarbeiroAdministrador>
+                <BotaoExcluirBarbeiroAdministrador
                   onClick={() => handleExcluirBarbeiro(barbeiro.idbarbeiro)}
                 >
                   Excluir
-                </button>
-              </li>
+                </BotaoExcluirBarbeiroAdministrador>
+              </LiBarbeirosAdministrador>
             ))}
-          </ul>
-        </div>
+          </UlBarbeirosAdministrador>
+        </DivEquipeAdministrador>
       )}
-      <button onClick={exibirFormularioAdicao}>Adicionar Barbeiro</button>
+      <BotaoAdicionarBarbeiroAdministrador onClick={exibirFormularioAdicao}>
+        Novo Barbeiro
+      </BotaoAdicionarBarbeiroAdministrador>
       {exibirFormulario && (
-        <div>
-          <h2>Adicionar Barbeiro</h2>
+        <DivFormulario>
           <form onSubmit={handleSubmit}>
-            <label>Nome:</label>
-            <input
+            <LabelAdicaoBarbeiro>Nome:</LabelAdicaoBarbeiro>
+            <InputAdicaoBarbeiro
               type="text"
               value={novoBarbeiro.nome}
               onChange={(e) =>
@@ -321,8 +376,8 @@ const AdministradorPage = () => {
               }
             />
             <br />
-            <label>Foto de Perfil (URL):</label>
-            <input
+            <LabelAdicaoBarbeiro>Foto de Perfil (URL):</LabelAdicaoBarbeiro>
+            <InputAdicaoBarbeiro
               type="text"
               value={novoBarbeiro.fotoperfil}
               onChange={(e) =>
@@ -330,8 +385,8 @@ const AdministradorPage = () => {
               }
             />
             <br />
-            <label>Email:</label>
-            <input
+            <LabelAdicaoBarbeiro>Email:</LabelAdicaoBarbeiro>
+            <InputAdicaoBarbeiro
               type="text"
               value={novoBarbeiro.email}
               onChange={(e) =>
@@ -339,8 +394,8 @@ const AdministradorPage = () => {
               }
             />
             <br />
-            <label>Telefone:</label>
-            <input
+            <LabelAdicaoBarbeiro>Telefone:</LabelAdicaoBarbeiro>
+            <InputAdicaoBarbeiro
               type="text"
               value={novoBarbeiro.telefone}
               onChange={(e) =>
@@ -348,8 +403,8 @@ const AdministradorPage = () => {
               }
             />
             <br />
-            <label>Senha:</label>
-            <input
+            <LabelAdicaoBarbeiro>Senha:</LabelAdicaoBarbeiro>
+            <InputAdicaoBarbeiro
               type="password"
               value={novoBarbeiro.senha}
               onChange={(e) =>
@@ -357,64 +412,88 @@ const AdministradorPage = () => {
               }
             />
             <br />
-            <label>Sobre:</label>
-            <textarea
+            <LabelAdicaoBarbeiro>Sobre:</LabelAdicaoBarbeiro>
+            <TextAreaAdicaoBarbeiro
               value={novoBarbeiro.sobre}
               onChange={(e) =>
                 setNovoBarbeiro({ ...novoBarbeiro, sobre: e.target.value })
               }
             />
             <br />
-            <label>Fotos de Trabalhos (URL):</label>
+            <LabelAdicaoBarbeiro>Fotos de Trabalhos (URL):</LabelAdicaoBarbeiro>
             {novoBarbeiro.fotos_trabalhos.map((foto, index) => (
               <div key={index}>
-                <input
+                <InputAdicaoBarbeiro
                   type="text"
                   value={foto}
                   onChange={(e) => handleFotosTrabalhosChange(index, e)}
                 />
               </div>
             ))}
-            <button type="button" onClick={adicionarCampoFotosTrabalhos}>
-              +
-            </button>
+            <BotaoAdicionarFotoBarbeiro
+              type="button"
+              onClick={adicionarCampoFotosTrabalhos}
+            >
+              Mais fotos
+            </BotaoAdicionarFotoBarbeiro>
             <br />
-            <button type="submit">Adicionar Barbeiro</button>
+            <BotaoAdicionarNovoBarbeiro type="submit">
+              Adicionar
+            </BotaoAdicionarNovoBarbeiro>
           </form>
-        </div>
+        </DivFormulario>
       )}
       {resumoFinanceiro.length > 0 && (
-        <div>
-          <h2>Resumo Financeiro</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Barbeiro</th>
-                <th>Total de Agendamentos</th>
-                <th>Média de Receita</th>
-                <th>Valor Total</th>
-                <th>Total Pix</th>
-                <th>Total Cartão</th>
-                <th>Total Dinheiro</th>
-              </tr>
-            </thead>
+        <DivResumoFinanceiroAdministrador>
+          <H2ResumoFinanceiroAdministrador>
+            Resumo Financeiro
+          </H2ResumoFinanceiroAdministrador>
+          <TabelaResumoAdministrador>
+            <THeadResumoAdministrador>
+              <TrResumoAdministrador>
+                <ThResumoAdministrador>Barbeiro</ThResumoAdministrador>
+                <ThResumoAdministrador>
+                  Total de Agendamentos
+                </ThResumoAdministrador>
+                <ThResumoAdministrador>Total Pix</ThResumoAdministrador>
+                <ThResumoAdministrador>Total Cartão</ThResumoAdministrador>
+                <ThResumoAdministrador>Total Dinheiro</ThResumoAdministrador>
+                <ThResumoAdministrador>Média de Receita</ThResumoAdministrador>
+                <ThResumoAdministrador>Valor Total</ThResumoAdministrador>
+              </TrResumoAdministrador>
+            </THeadResumoAdministrador>
             <tbody>
               {resumoFinanceiro.map((item) => (
                 <tr key={item.barbeiro_id}>
-                  <td>{item.nomebarbeiro}</td>
-                  <td>{item.totalagendamentos}</td>
-                  <td>R$ {parseFloat(item.mediareceita).toFixed(2)}</td>
-                  <td>R$ {parseFloat(item.valortotal).toFixed(2)}</td>
-                  <td>{item.totalpix}</td>
-                  <td>{item.totalcartao}</td>
-                  <td>{item.totaldinheiro}</td>
+                  <TdResumoAdministrador>
+                    {item.nomebarbeiro}
+                  </TdResumoAdministrador>
+                  <TdResumoAdministrador>
+                    {item.totalagendamentos}
+                  </TdResumoAdministrador>
+                  <TdResumoAdministrador>{item.totalpix}</TdResumoAdministrador>
+                  <TdResumoAdministrador>
+                    {item.totalcartao}
+                  </TdResumoAdministrador>
+                  <TdResumoAdministrador>
+                    {item.totaldinheiro}
+                  </TdResumoAdministrador>
+                  <TdResumoAdministrador>
+                    R$ {parseFloat(item.mediareceita).toFixed(2)}
+                  </TdResumoAdministrador>
+                  <TdResumoAdministrador>
+                    R$ {parseFloat(item.valortotal).toFixed(2)}
+                  </TdResumoAdministrador>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+          </TabelaResumoAdministrador>
+        </DivResumoFinanceiroAdministrador>
       )}
-    </div>
+      <DivFooterAdministrador>
+        <Footer></Footer>
+      </DivFooterAdministrador>
+    </DivAdministrador>
   );
 };
 
