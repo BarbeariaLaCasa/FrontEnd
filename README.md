@@ -1,4 +1,4 @@
-# florescer-front-end
+# FrontEnd Barbearia La Casa
 
 ## 💈 Preparando o ambiente:
 
