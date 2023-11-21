@@ -13,7 +13,7 @@ npm install
 ```bash
 npm start
 ```
-3. Abra um novo terminal e rode backend, não esqueça de prepará-lo também:
+3. 🚩 Abra um novo terminal e rode backend, não esqueça de prepará-lo também:
 ```bash
 npm start
 ```
