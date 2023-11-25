@@ -190,16 +190,13 @@ const UserPage = () => {
     setFormaPagamentoSelecionada(forma);
     setFormaPagamento(forma);
 
-    const precosServicos: { [key: string]: number } = {
-      barba: 10,
-      corte: 30,
-      sobrancelha: 5,
-    };
-
-    const total = servicosSelecionados.reduce(
-      (total, servico) => total + precosServicos[servico],
-      0
-    );
+    const total = servicosSelecionados.reduce((total, servico) => {
+      const servicoEncontrado = servicos.find((s) => s.nome === servico);
+      if (servicoEncontrado && !isNaN(Number(servicoEncontrado.valor))) {
+        return total + Number(servicoEncontrado.valor);
+      }
+      return total;
+    }, 0);
 
     setValorTotal(total);
   };
@@ -424,7 +421,7 @@ const UserPage = () => {
           <H2FormaPagamento>Forma de Pagamento</H2FormaPagamento>
           <LabelFormaPagamento>
             <input
-              type="radio"
+              type="checkbox"
               value="cartao"
               checked={formaPagamento === "cartao"}
               onChange={() => handleFormaPagamentoSelecionada("Cartão")}
@@ -433,7 +430,7 @@ const UserPage = () => {
           </LabelFormaPagamento>
           <LabelFormaPagamento>
             <input
-              type="radio"
+              type="checkbox"
               value="pix"
               checked={formaPagamento === "pix"}
               onChange={() => handleFormaPagamentoSelecionada("Pix")}
@@ -442,7 +439,7 @@ const UserPage = () => {
           </LabelFormaPagamento>
           <LabelFormaPagamento>
             <input
-              type="radio"
+              type="checkbox"
               value="dinheiro"
               checked={formaPagamento === "dinheiro"}
               onChange={() => handleFormaPagamentoSelecionada("Dinheiro")}
