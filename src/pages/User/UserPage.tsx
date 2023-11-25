@@ -67,7 +67,6 @@ const UserPage = () => {
     useState<string>("");
   const [valorTotal, setValorTotal] = useState<number>(0);
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [mostrarAgendamentos, setMostrarAgendamentos] = useState(false);
   const [resumoFinanceiro, setResumoFinanceiro] = useState({
     quantidadeCortes: 0,
     valorTotal: 0,
@@ -78,6 +77,10 @@ const UserPage = () => {
     [forma: string]: number;
   }>({});
   const [botaoAtivo, setBotaoAtivo] = useState<string | null>(null);
+  const [mostrarSolicitarAgendamento, setMostrarSolicitarAgendamento] =
+    useState(false);
+  const [mostrarAgendamentos, setMostrarAgendamentos] = useState(false);
+  const [mostrarResumoFinanceiro, setMostrarResumoFinanceiro] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -98,6 +101,20 @@ const UserPage = () => {
   }, []);
 
   const handleSolicitarAgendamento = () => {
+    setBarbeirosData([]);
+    setBarbeiroIdSelecionado(null);
+    setServicosSelecionados([]);
+    setDataSelecionada(null);
+    setFormaPagamento(null);
+    setFormaPagamentoSelecionada(null);
+    setHorarioInicio(null);
+    setHorarioFinal(null);
+    setNomeBarbeiroSelecionado("");
+    setValorTotal(0);
+    setBotaoAtivo("solicitarAgendamento");
+    setMostrarSolicitarAgendamento(true);
+    setMostrarAgendamentos(false);
+    setMostrarResumoFinanceiro(false);
     axios
       .get("http://localhost:3001/barbeiros")
       .then((response) => {
@@ -179,8 +196,6 @@ const UserPage = () => {
         novaDataInicio.getUTCMinutes() + duracaoTotal
       );
 
-      console.log("Nova Data Início:", novaDataInicio);
-
       setHorarioInicio(dataSelecionada);
       setHorarioFinal(novaDataInicio);
     }
@@ -188,7 +203,7 @@ const UserPage = () => {
 
   const handleFormaPagamentoSelecionada = (forma: string) => {
     setFormaPagamentoSelecionada(forma);
-    setFormaPagamento(forma);
+    setFormaPagamento(forma === formaPagamento ? null : forma);
 
     const total = servicosSelecionados.reduce((total, servico) => {
       const servicoEncontrado = servicos.find((s) => s.nome === servico);
@@ -223,12 +238,20 @@ const UserPage = () => {
       status: "aguardando",
     };
 
-    console.log("Dados do Agendamento:", agendamento);
-
     axios
       .post("http://localhost:3001/agendamentos", agendamento)
       .then((response) => {
         alert("Agendamento salvo com sucesso!");
+
+        setBarbeiroIdSelecionado(null);
+        setServicosSelecionados([]);
+        setDataSelecionada(null);
+        setFormaPagamento(null);
+        setFormaPagamentoSelecionada(null);
+        setHorarioInicio(null);
+        setHorarioFinal(null);
+        setNomeBarbeiroSelecionado("");
+        setValorTotal(0);
       })
       .catch((error) => {
         console.error("Erro ao salvar agendamento:", error);
@@ -236,6 +259,11 @@ const UserPage = () => {
   };
 
   const handleMostrarAgendamentos = () => {
+    setAgendamentos([]);
+    setBotaoAtivo("mostrarAgendamentos");
+    setMostrarSolicitarAgendamento(false);
+    setMostrarAgendamentos(true);
+    setMostrarResumoFinanceiro(false);
     const userId = localStorage.getItem("userId");
 
     if (userId) {
@@ -290,6 +318,10 @@ const UserPage = () => {
   };
 
   const handleMostrarResumoFinanceiro = () => {
+    setBotaoAtivo("mostrarResumoFinanceiro");
+    setMostrarSolicitarAgendamento(false);
+    setMostrarAgendamentos(false);
+    setMostrarResumoFinanceiro(true);
     const userId = localStorage.getItem("userId");
     if (userId) {
       calcularResumoFinanceiro(userId);
@@ -422,8 +454,8 @@ const UserPage = () => {
           <LabelFormaPagamento>
             <input
               type="checkbox"
-              value="cartao"
-              checked={formaPagamento === "cartao"}
+              value="Cartão"
+              checked={formaPagamento === "Cartão"}
               onChange={() => handleFormaPagamentoSelecionada("Cartão")}
             />
             Cartão de Crédito/Débito
@@ -431,8 +463,8 @@ const UserPage = () => {
           <LabelFormaPagamento>
             <input
               type="checkbox"
-              value="pix"
-              checked={formaPagamento === "pix"}
+              value="Pix"
+              checked={formaPagamento === "Pix"}
               onChange={() => handleFormaPagamentoSelecionada("Pix")}
             />
             PIX
@@ -440,8 +472,8 @@ const UserPage = () => {
           <LabelFormaPagamento>
             <input
               type="checkbox"
-              value="dinheiro"
-              checked={formaPagamento === "dinheiro"}
+              value="Dinheiro"
+              checked={formaPagamento === "Dinheiro"}
               onChange={() => handleFormaPagamentoSelecionada("Dinheiro")}
             />
             Dinheiro
