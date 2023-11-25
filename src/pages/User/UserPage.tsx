@@ -55,6 +55,7 @@ const UserPage = () => {
     []
   );
   const [dataSelecionada, setDataSelecionada] = useState<Date | null>(null);
+  const [servicos, setServicos] = useState<any[]>([]);
   const [formaPagamento, setFormaPagamento] = useState<string | null>(null);
   const [formaPagamentoSelecionada, setFormaPagamentoSelecionada] = useState<
     string | null
@@ -134,6 +135,17 @@ const UserPage = () => {
     }
   };
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/servicos")
+      .then((response) => {
+        setServicos(response.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar os serviços:", error);
+      });
+  }, []);
+
   const handleServicoSelecionado = (servico: string) => {
     if (servicosSelecionados.includes(servico)) {
       setServicosSelecionados(
@@ -146,16 +158,15 @@ const UserPage = () => {
   };
 
   useEffect(() => {
-    const temposEstimados: { [key: string]: number } = {
-      barba: 30,
-      cabelo: 30,
-      sobrancelha: 15,
-    };
-
-    const duracaoTotal = servicosSelecionados.reduce(
-      (total, servico) => total + temposEstimados[servico],
-      0
-    );
+    const duracaoTotal = servicosSelecionados.reduce((total, servico) => {
+      const servicoSelecionado = servicos.find(
+        (s) => s.nome.toLowerCase() === servico.toLowerCase()
+      );
+      const duracaoServico = servicoSelecionado?.duração || "00:00:00";
+      const [hours, minutes, seconds] = duracaoServico.split(":").map(Number);
+      const duracaoEmMinutos = hours * 60 + minutes + seconds / 60;
+      return total + duracaoEmMinutos;
+    }, 0);
 
     if (
       barbeiroIdSelecionado !== null &&
@@ -163,13 +174,17 @@ const UserPage = () => {
       dataSelecionada instanceof Date
     ) {
       const novaDataInicio = new Date(dataSelecionada.getTime());
-      const novaDataFinal = new Date(
-        dataSelecionada.getTime() + duracaoTotal * 60000
+
+      novaDataInicio.setUTCMinutes(
+        novaDataInicio.getUTCMinutes() + duracaoTotal
       );
-      setHorarioInicio(novaDataInicio);
-      setHorarioFinal(novaDataFinal);
+
+      console.log("Nova Data Início:", novaDataInicio);
+
+      setHorarioInicio(dataSelecionada);
+      setHorarioFinal(novaDataInicio);
     }
-  }, [servicosSelecionados, barbeiroIdSelecionado, dataSelecionada]);
+  }, [servicosSelecionados, barbeiroIdSelecionado, dataSelecionada, servicos]);
 
   const handleFormaPagamentoSelecionada = (forma: string) => {
     setFormaPagamentoSelecionada(forma);
@@ -177,7 +192,7 @@ const UserPage = () => {
 
     const precosServicos: { [key: string]: number } = {
       barba: 10,
-      cabelo: 30,
+      corte: 30,
       sobrancelha: 5,
     };
 
@@ -376,33 +391,17 @@ const UserPage = () => {
       {barbeiroIdSelecionado !== null && (
         <DivServico>
           <H2Servico>Serviços</H2Servico>
-          <CheckboxLabelServico>
-            <input
-              type="checkbox"
-              value="Barba"
-              checked={servicosSelecionados.includes("Barba")}
-              onChange={() => handleServicoSelecionado("Barba")}
-            />
-            Barba
-          </CheckboxLabelServico>
-          <CheckboxLabelServico>
-            <input
-              type="checkbox"
-              value="Cabelo"
-              checked={servicosSelecionados.includes("Cabelo")}
-              onChange={() => handleServicoSelecionado("Cabelo")}
-            />
-            Cabelo
-          </CheckboxLabelServico>
-          <CheckboxLabelServico>
-            <input
-              type="checkbox"
-              value="Sobrancelha"
-              checked={servicosSelecionados.includes("Sobrancelha")}
-              onChange={() => handleServicoSelecionado("Sobrancelha")}
-            />
-            Sobrancelha
-          </CheckboxLabelServico>
+          {servicos.map((servico) => (
+            <CheckboxLabelServico key={servico.idserviço}>
+              <input
+                type="checkbox"
+                value={servico.nome}
+                checked={servicosSelecionados.includes(servico.nome)}
+                onChange={() => handleServicoSelecionado(servico.nome)}
+              />
+              {servico.nome}
+            </CheckboxLabelServico>
+          ))}
         </DivServico>
       )}
       {servicosSelecionados.length > 0 && (
