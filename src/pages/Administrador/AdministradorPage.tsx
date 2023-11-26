@@ -72,6 +72,7 @@ const AdministradorPage = () => {
   const [servicosData, setServicosData] = useState<any[]>([]);
   const [resumoFinanceiro, setResumoFinanceiro] = useState<any[]>([]);
   const [barbeiroNomes, setBarbeiroNomes] = useState({});
+  const [secaoAtiva, setSecaoAtiva] = useState("equipe");
 
   useEffect(() => {
     const administradorId = localStorage.getItem("administradorId");
@@ -101,6 +102,7 @@ const AdministradorPage = () => {
           selecionado: true,
         }));
         setBarbeirosData(barbeiros);
+        setSecaoAtiva("equipe");
       })
       .catch((error) => {
         console.error("Erro ao buscar os dados dos barbeiros:", error);
@@ -194,9 +196,10 @@ const AdministradorPage = () => {
 
   const handleServicosClick = () => {
     axios
-      .get("http://localhost:3001/servicos") // Rota para buscar serviços
+      .get("http://localhost:3001/servicos")
       .then((response) => {
-        setServicosData(response.data); // Define os serviços no estado
+        setServicosData(response.data);
+        setSecaoAtiva("servicos");
       })
       .catch((error) => {
         console.error("Erro ao buscar os dados dos serviços:", error);
@@ -252,6 +255,7 @@ const AdministradorPage = () => {
       .get("http://localhost:3001/resumo-financeiro")
       .then((response) => {
         setResumoFinanceiro(response.data);
+        setSecaoAtiva("resumo");
       })
       .catch((error) => {
         console.error("Erro ao buscar o resumo financeiro:", error);
@@ -267,7 +271,7 @@ const AdministradorPage = () => {
         <Botoes onClick={handleServicosClick}>Serviços</Botoes>
         <Botoes onClick={handleResumoClick}>Resumo financeiro</Botoes>
       </DivBotoes>
-      {servicosData.length > 0 && (
+      {secaoAtiva === "servicos" && servicosData.length > 0 && (
         <DivServicos>
           <H2Servicos>Serviços</H2Servicos>
           <UlServicos>
@@ -320,7 +324,7 @@ const AdministradorPage = () => {
         </DivServicos>
       )}
 
-      {barbeirosData.length > 0 && (
+      {secaoAtiva === "equipe" && barbeirosData.length > 0 && (
         <DivEquipeAdministrador>
           <H2BarbeirosAdministrador>Barbeiros</H2BarbeirosAdministrador>
           <UlBarbeirosAdministrador>
@@ -359,91 +363,100 @@ const AdministradorPage = () => {
               </LiBarbeirosAdministrador>
             ))}
           </UlBarbeirosAdministrador>
-        </DivEquipeAdministrador>
-      )}
-      <BotaoAdicionarBarbeiroAdministrador onClick={exibirFormularioAdicao}>
-        Novo Barbeiro
-      </BotaoAdicionarBarbeiroAdministrador>
-      {exibirFormulario && (
-        <DivFormulario>
-          <form onSubmit={handleSubmit}>
-            <LabelAdicaoBarbeiro>Nome:</LabelAdicaoBarbeiro>
-            <InputAdicaoBarbeiro
-              type="text"
-              value={novoBarbeiro.nome}
-              onChange={(e) =>
-                setNovoBarbeiro({ ...novoBarbeiro, nome: e.target.value })
-              }
-            />
-            <br />
-            <LabelAdicaoBarbeiro>Foto de Perfil (URL):</LabelAdicaoBarbeiro>
-            <InputAdicaoBarbeiro
-              type="text"
-              value={novoBarbeiro.fotoperfil}
-              onChange={(e) =>
-                setNovoBarbeiro({ ...novoBarbeiro, fotoperfil: e.target.value })
-              }
-            />
-            <br />
-            <LabelAdicaoBarbeiro>Email:</LabelAdicaoBarbeiro>
-            <InputAdicaoBarbeiro
-              type="text"
-              value={novoBarbeiro.email}
-              onChange={(e) =>
-                setNovoBarbeiro({ ...novoBarbeiro, email: e.target.value })
-              }
-            />
-            <br />
-            <LabelAdicaoBarbeiro>Telefone:</LabelAdicaoBarbeiro>
-            <InputAdicaoBarbeiro
-              type="text"
-              value={novoBarbeiro.telefone}
-              onChange={(e) =>
-                setNovoBarbeiro({ ...novoBarbeiro, telefone: e.target.value })
-              }
-            />
-            <br />
-            <LabelAdicaoBarbeiro>Senha:</LabelAdicaoBarbeiro>
-            <InputAdicaoBarbeiro
-              type="password"
-              value={novoBarbeiro.senha}
-              onChange={(e) =>
-                setNovoBarbeiro({ ...novoBarbeiro, senha: e.target.value })
-              }
-            />
-            <br />
-            <LabelAdicaoBarbeiro>Sobre:</LabelAdicaoBarbeiro>
-            <TextAreaAdicaoBarbeiro
-              value={novoBarbeiro.sobre}
-              onChange={(e) =>
-                setNovoBarbeiro({ ...novoBarbeiro, sobre: e.target.value })
-              }
-            />
-            <br />
-            <LabelAdicaoBarbeiro>Fotos de Trabalhos (URL):</LabelAdicaoBarbeiro>
-            {novoBarbeiro.fotos_trabalhos.map((foto, index) => (
-              <div key={index}>
+          <BotaoAdicionarBarbeiroAdministrador onClick={exibirFormularioAdicao}>
+            Novo Barbeiro
+          </BotaoAdicionarBarbeiroAdministrador>
+          {exibirFormulario && (
+            <DivFormulario>
+              <form onSubmit={handleSubmit}>
+                <LabelAdicaoBarbeiro>Nome:</LabelAdicaoBarbeiro>
                 <InputAdicaoBarbeiro
                   type="text"
-                  value={foto}
-                  onChange={(e) => handleFotosTrabalhosChange(index, e)}
+                  value={novoBarbeiro.nome}
+                  onChange={(e) =>
+                    setNovoBarbeiro({ ...novoBarbeiro, nome: e.target.value })
+                  }
                 />
-              </div>
-            ))}
-            <BotaoAdicionarFotoBarbeiro
-              type="button"
-              onClick={adicionarCampoFotosTrabalhos}
-            >
-              Mais fotos
-            </BotaoAdicionarFotoBarbeiro>
-            <br />
-            <BotaoAdicionarNovoBarbeiro type="submit">
-              Adicionar
-            </BotaoAdicionarNovoBarbeiro>
-          </form>
-        </DivFormulario>
+                <br />
+                <LabelAdicaoBarbeiro>Foto de Perfil (URL):</LabelAdicaoBarbeiro>
+                <InputAdicaoBarbeiro
+                  type="text"
+                  value={novoBarbeiro.fotoperfil}
+                  onChange={(e) =>
+                    setNovoBarbeiro({
+                      ...novoBarbeiro,
+                      fotoperfil: e.target.value,
+                    })
+                  }
+                />
+                <br />
+                <LabelAdicaoBarbeiro>Email:</LabelAdicaoBarbeiro>
+                <InputAdicaoBarbeiro
+                  type="text"
+                  value={novoBarbeiro.email}
+                  onChange={(e) =>
+                    setNovoBarbeiro({ ...novoBarbeiro, email: e.target.value })
+                  }
+                />
+                <br />
+                <LabelAdicaoBarbeiro>Telefone:</LabelAdicaoBarbeiro>
+                <InputAdicaoBarbeiro
+                  type="text"
+                  value={novoBarbeiro.telefone}
+                  onChange={(e) =>
+                    setNovoBarbeiro({
+                      ...novoBarbeiro,
+                      telefone: e.target.value,
+                    })
+                  }
+                />
+                <br />
+                <LabelAdicaoBarbeiro>Senha:</LabelAdicaoBarbeiro>
+                <InputAdicaoBarbeiro
+                  type="password"
+                  value={novoBarbeiro.senha}
+                  onChange={(e) =>
+                    setNovoBarbeiro({ ...novoBarbeiro, senha: e.target.value })
+                  }
+                />
+                <br />
+                <LabelAdicaoBarbeiro>Sobre:</LabelAdicaoBarbeiro>
+                <TextAreaAdicaoBarbeiro
+                  value={novoBarbeiro.sobre}
+                  onChange={(e) =>
+                    setNovoBarbeiro({ ...novoBarbeiro, sobre: e.target.value })
+                  }
+                />
+                <br />
+                <LabelAdicaoBarbeiro>
+                  Fotos de Trabalhos (URL):
+                </LabelAdicaoBarbeiro>
+                {novoBarbeiro.fotos_trabalhos.map((foto, index) => (
+                  <div key={index}>
+                    <InputAdicaoBarbeiro
+                      type="text"
+                      value={foto}
+                      onChange={(e) => handleFotosTrabalhosChange(index, e)}
+                    />
+                  </div>
+                ))}
+                <BotaoAdicionarFotoBarbeiro
+                  type="button"
+                  onClick={adicionarCampoFotosTrabalhos}
+                >
+                  Mais fotos
+                </BotaoAdicionarFotoBarbeiro>
+                <br />
+                <BotaoAdicionarNovoBarbeiro type="submit">
+                  Adicionar
+                </BotaoAdicionarNovoBarbeiro>
+              </form>
+            </DivFormulario>
+          )}
+        </DivEquipeAdministrador>
       )}
-      {resumoFinanceiro.length > 0 && (
+
+      {secaoAtiva === "resumo" && resumoFinanceiro.length > 0 && (
         <DivResumoFinanceiroAdministrador>
           <H2ResumoFinanceiroAdministrador>
             Resumo Financeiro

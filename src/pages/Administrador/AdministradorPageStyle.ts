@@ -182,8 +182,8 @@ export const BotaoExcluirBarbeiroAdministrador = styled.button`
 `;
 
 export const BotaoAdicionarBarbeiroAdministrador = styled.button`
-  margin-top: 25px;
-  margin-left: 45%;
+  margin-top: 50px;
+  margin-left: 20%;
   border-radius: 10px;
   padding: 4px;
   border: 2px solid ${colorsVariables.goldDark};
@@ -302,7 +302,7 @@ export const AgendamentoContainer = styled.div`
 `;
 
 export const AgendamentoBox = styled.div`
-  border: 1px solid #000;
+  border: 1px solid ${colorsVariables.black};
   padding: 10px;
   margin: 10px;
   width: 200px; /* Ajuste a largura conforme necessário */
