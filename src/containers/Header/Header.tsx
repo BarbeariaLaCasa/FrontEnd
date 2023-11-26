@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logoBarbearia.jpg";
 import { CabecalhoChild, CabecalhoRoot, Login, Logo } from "./HeaderStyle";
 
@@ -9,12 +9,11 @@ const Header: FunctionComponent = () => {
     color: "inherit",
   };
 
-  const [estaLogado, setEstaLogado] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    const idDoUsuario = localStorage.getItem("idDoUsuario");
-    setEstaLogado(!!idDoUsuario);
-  }, []);
+    console.log("Localização atual:", location.pathname);
+  }, [location]);
 
   return (
     <CabecalhoRoot>
@@ -22,13 +21,14 @@ const Header: FunctionComponent = () => {
       <Logo alt="Logo da Barbearia" src={logo} />
       <Login>
         <motion.li whileTap={{ scale: 1.1 }}>
-          {estaLogado ? (
+          {location.pathname.startsWith("/user") ||
+          location.pathname.startsWith("/administrador") ||
+          location.pathname.startsWith("/barbeiro") ? (
             <Link
               to="/"
               style={linkStyle}
               onClick={() => {
                 localStorage.removeItem("idDoUsuario");
-                setEstaLogado(false);
               }}
             >
               Sair
