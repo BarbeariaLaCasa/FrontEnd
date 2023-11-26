@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  BotoesAgendamento,
   BotoesAgendamentoAceitar,
   BotoesAgendamentoRecusar,
   BotoesBarbeiro,
@@ -31,7 +30,6 @@ import Footer from "../../containers/Footer/Footer";
 
 const BarbeiroPage = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [mostrarAgendamentos, setMostrarAgendamentos] = useState(false);
   const [nomeBarbeiro, setNomeBarbeiro] = useState("");
   const [barbeiroIdLogado, setBarbeiroIdLogado] = useState<number | null>(null);
   const [resumoFinanceiro, setResumoFinanceiro] = useState({
@@ -44,6 +42,8 @@ const BarbeiroPage = () => {
   const [formasPagamento, setFormasPagamento] = useState<{
     [forma: string]: number;
   }>({});
+
+  const [secaoAtual, setSecaoAtual] = useState<string | null>(null);
 
   const aceitarAgendamento = (agendamentoId: number) => {
     const novoStatus = "aceito";
@@ -75,7 +75,7 @@ const BarbeiroPage = () => {
           (agendamento) => agendamento.barbeiro_id === barbeiroIdLogado
         );
         setAgendamentos(agendamentosFiltrados);
-        setMostrarAgendamentos(true);
+        setSecaoAtual("agendamentos");
       })
       .catch((error) => {
         console.error("Erro ao buscar agendamentos:", error);
@@ -149,18 +149,31 @@ const BarbeiroPage = () => {
           mediaPorCorte,
           formasPagamento,
         });
+        setSecaoAtual("resumoFinanceiro");
       })
       .catch((error) => {
         console.error("Erro ao buscar os agendamentos:", error);
       });
   };
 
-  const handleMostrarResumoFinanceiro = () => {
-    const barbeiroId = localStorage.getItem("barbeiroId");
-    if (barbeiroId) {
-      calcularResumoFinanceiro(barbeiroId);
-    } else {
-      console.error("ID do usuário não encontrado no localStorage.");
+  const handleMostrarOpcoes = (opcao: string) => {
+    setAgendamentos([]);
+    setResumoFinanceiro({
+      quantidadeCortes: 0,
+      valorTotal: 0,
+      mediaPorCorte: 0,
+      formasPagamento: 0,
+    });
+
+    if (opcao === "agendamentos") {
+      buscarAgendamentos();
+    } else if (opcao === "resumoFinanceiro") {
+      const barbeiroId = localStorage.getItem("barbeiroId");
+      if (barbeiroId) {
+        calcularResumoFinanceiro(barbeiroId);
+      } else {
+        console.error("ID do usuário não encontrado no localStorage.");
+      }
     }
   };
 
@@ -169,14 +182,14 @@ const BarbeiroPage = () => {
       <Header></Header>
       <NomeBarbeiro>Olá, {nomeBarbeiro}</NomeBarbeiro>
       <DivBotoesBarbeiro>
-        <BotoesBarbeiro onClick={buscarAgendamentos}>
+        <BotoesBarbeiro onClick={() => handleMostrarOpcoes("agendamentos")}>
           Solicitações de Agendamentos
         </BotoesBarbeiro>
-        <BotoesBarbeiro onClick={handleMostrarResumoFinanceiro}>
+        <BotoesBarbeiro onClick={() => handleMostrarOpcoes("resumoFinanceiro")}>
           Resumo Financeiro
         </BotoesBarbeiro>
       </DivBotoesBarbeiro>
-      {mostrarAgendamentos && (
+      {secaoAtual === "agendamentos" && agendamentos.length > 0 && (
         <DivAgendamentosBarbeiro>
           <H2AgendamentosBarbeiro>Agendamentos:</H2AgendamentosBarbeiro>
           <DivUlBarbeiros>
@@ -235,7 +248,7 @@ const BarbeiroPage = () => {
           </DivUlBarbeiros>
         </DivAgendamentosBarbeiro>
       )}
-      {resumoFinanceiro && (
+      {secaoAtual === "resumoFinanceiro" && resumoFinanceiro && (
         <DivResumoFinanceiroBarbeiro>
           <H2ResumoFinanceiroBarbeiro>
             Resumo Financeiro
