@@ -51,6 +51,7 @@ const UserPage = () => {
   const [barbeiroIdSelecionado, setBarbeiroIdSelecionado] = useState<
     number | null
   >(null);
+  const [horariosOcupados, setHorariosOcupados] = useState<number[]>([]);
   const [servicosSelecionados, setServicosSelecionados] = useState<string[]>(
     []
   );
@@ -137,19 +138,47 @@ const UserPage = () => {
       (barbeiro) => barbeiro.idbarbeiro === barbeiroId
     );
 
-    if (barbeiroClicado) {
-      barbeiroClicado.selecionado = !barbeiroClicado.selecionado;
+    if (barbeiroClicado && barbeiroClicado.selecionado) {
+      setBarbeiroIdSelecionado(barbeiroId);
+      setNomeBarbeiroSelecionado(nome);
 
-      setBarbeirosData(novosBarbeirosData);
+      // Carregar agendamentos do barbeiro selecionado
+      axios
+        .get(`http://localhost:3001/agendamentos/barbeiro/${barbeiroId}`)
+        .then((response) => {
+          const agendamentosBarbeiro = response.data;
+          setAgendamentos(agendamentosBarbeiro);
 
-      if (barbeiroClicado.selecionado) {
-        setBarbeiroIdSelecionado(barbeiroId);
-        setNomeBarbeiroSelecionado(nome);
-      } else {
-        setBarbeiroIdSelecionado(null);
-        setNomeBarbeiroSelecionado("");
-      }
+          // Atualizar horários ocupados
+          const horariosOcupadosBarbeiro = agendamentosBarbeiro.map(
+            (agendamento: { data: string; hora: string }) => {
+              return new Date(
+                agendamento.data + " " + agendamento.hora
+              ).getHours();
+            }
+          );
+          setHorariosOcupados(horariosOcupadosBarbeiro);
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar os agendamentos do barbeiro:", error);
+        });
+    } else {
+      setBarbeiroIdSelecionado(null);
+      setNomeBarbeiroSelecionado("");
+      setHorariosOcupados([]); // Limpar horários ocupados se nenhum barbeiro estiver selecionado
     }
+  };
+
+  const verificarConflitoAgendamento = (
+    dataHora: Date,
+    barbeiroId: number | null
+  ) => {
+    if (barbeiroId === null) {
+      return true;
+    }
+
+    const horaSelecionada = dataHora.getHours();
+    return !horariosOcupados.includes(horaSelecionada);
   };
 
   useEffect(() => {
@@ -225,6 +254,16 @@ const UserPage = () => {
       horarioInicio === null
     ) {
       alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const conflitoAgendamento = verificarConflitoAgendamento(
+      dataSelecionada,
+      barbeiroIdSelecionado
+    );
+
+    if (conflitoAgendamento) {
+      alert("Já existe um agendamento para esse horário com o mesmo barbeiro.");
       return;
     }
 

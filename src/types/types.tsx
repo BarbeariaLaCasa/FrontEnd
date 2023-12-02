@@ -5,6 +5,7 @@ export type Barbeiro = {
 };
 
 export type Agendamento = {
+  disabled: boolean;
   id: null | number;
   barbeiro: string;
   idagendamentos: number;
