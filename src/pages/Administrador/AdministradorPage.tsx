@@ -8,10 +8,16 @@ import {
   BotaoAdicionarBarbeiroAdministrador,
   BotaoAdicionarFotoBarbeiro,
   BotaoAdicionarNovoBarbeiro,
+  BotaoCancelarDescricao,
   BotaoCancelarEdicao,
+  BotaoCancelarTitulo,
+  BotaoEditarDescricao,
   BotaoEditarServico,
+  BotaoEditarTitulo,
   BotaoExcluirBarbeiroAdministrador,
+  BotaoSalvarDescricao,
   BotaoSalvarEdicao,
+  BotaoSalvarTitulo,
   Botoes,
   DivAdministrador,
   DivBotaoEdicao,
@@ -21,9 +27,11 @@ import {
   DivEquipeAdministrador,
   DivFooterAdministrador,
   DivFormulario,
+  DivPaginaInicial,
   DivResumoFinanceiroAdministrador,
   DivServicos,
   DivServicosExibicao,
+  DivTextosPaginaInicial,
   H2BarbeirosAdministrador,
   H2ResumoFinanceiroAdministrador,
   H2Servicos,
@@ -39,6 +47,7 @@ import {
   TabelaResumoAdministrador,
   TdResumoAdministrador,
   TextAreaAdicaoBarbeiro,
+  TextAreaEdicao,
   TextConteudoServico,
   TextServicoNome,
   TexteEdicao,
@@ -48,6 +57,7 @@ import {
   UlServicos,
 } from "./AdministradorPageStyle";
 import Footer from "../../containers/Footer/Footer";
+import { BotaoSalvarAgendamento } from "../User/UserPageStyle";
 
 const AdministradorPage = () => {
   const [nomeAdministrador, setNomeAdministrador] = useState("");
@@ -606,67 +616,54 @@ const AdministradorPage = () => {
         </DivResumoFinanceiroAdministrador>
       )}
       {secaoAtiva === "pagina-inicial" && (
-        <div>
-          <div
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-              position: "relative",
-            }}
-          >
+        <DivPaginaInicial>
+          <DivTextosPaginaInicial>
             {modoEdicaoTitulo ? (
               <>
-                <textarea
+                <TextAreaEdicao
                   value={novoTitulo}
                   onChange={(e) => setNovoTitulo(e.target.value)}
                 />
-                <button onClick={handleCancelarEdicaoTitulo}>Cancelar</button>
-                <button onClick={handleSalvarEdicaoTitulo}>Salvar</button>
+                <BotaoCancelarTitulo onClick={handleCancelarEdicaoTitulo}>
+                  Cancelar
+                </BotaoCancelarTitulo>
+                <BotaoSalvarTitulo onClick={handleSalvarEdicaoTitulo}>
+                  Salvar
+                </BotaoSalvarTitulo>
               </>
             ) : (
               <>
                 <h2>{tituloInicial}</h2>
-                <button
-                  style={{ position: "absolute", top: "5px", right: "5px" }}
-                  onClick={handleEditarTitulo}
-                >
+                <BotaoEditarTitulo onClick={handleEditarTitulo}>
                   Editar
-                </button>
+                </BotaoEditarTitulo>
               </>
             )}
-          </div>
-          <div
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              position: "relative",
-            }}
-          >
+          </DivTextosPaginaInicial>
+          <DivTextosPaginaInicial>
             {modoEdicaoDescricao ? (
               <>
-                <textarea
+                <TextAreaEdicao
                   value={novaDescricao}
                   onChange={(e) => setNovaDescricao(e.target.value)}
                 />
-                <button onClick={handleCancelarEdicaoDescricao}>
+                <BotaoCancelarDescricao onClick={handleCancelarEdicaoDescricao}>
                   Cancelar
-                </button>
-                <button onClick={handleSalvarEdicaoDescricao}>Salvar</button>
+                </BotaoCancelarDescricao>
+                <BotaoSalvarDescricao onClick={handleSalvarEdicaoDescricao}>
+                  Salvar
+                </BotaoSalvarDescricao>
               </>
             ) : (
               <>
                 <p>{descricaoInicial}</p>
-                <button
-                  style={{ position: "absolute", top: "5px", right: "5px" }}
-                  onClick={handleEditarDescricao}
-                >
+                <BotaoEditarDescricao onClick={handleEditarDescricao}>
                   Editar
-                </button>
+                </BotaoEditarDescricao>
               </>
             )}
-          </div>
-        </div>
+          </DivTextosPaginaInicial>
+        </DivPaginaInicial>
       )}
 
       <DivFooterAdministrador>

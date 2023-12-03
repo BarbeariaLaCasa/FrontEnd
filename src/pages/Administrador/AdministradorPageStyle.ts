@@ -311,3 +311,88 @@ export const AgendamentoBox = styled.div`
 export const DivFooterAdministrador = styled.div`
   margin-top: 100px;
 `;
+
+export const DivPaginaInicial = styled.div`
+  margin-top: 20px;
+`;
+
+export const DivTextosPaginaInicial = styled.div`
+  border: 2px solid ${colorsVariables.goldMedium};
+  padding: 10px;
+  margin: 45px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: stretch;
+  justify-content: flex-end;
+  align-items: center;
+`;
+
+export const BotaoEditarTitulo = styled.button`
+  margin-top: 20px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const TextAreaEdicao = styled.textarea`
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  border: 2px solid ${colorsVariables.goldMedium};
+  padding: 10px;
+  margin: 45px;
+`;
+
+export const BotaoCancelarTitulo = styled.button`
+  margin-top: 20px;
+  margin-left: 80px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoSalvarTitulo = styled.button`
+  position: absolute;
+  margin-top: 50px;
+  margin-left: -60px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoEditarDescricao = styled.button`
+  margin-top: 20px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoCancelarDescricao = styled.button`
+  margin-top: 20px;
+  margin-left: 80px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoSalvarDescricao = styled.button`
+  position: absolute;
+  margin-top: -2px;
+  margin-left: -60px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
