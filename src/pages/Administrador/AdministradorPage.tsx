@@ -55,6 +55,13 @@ const AdministradorPage = () => {
   const [barbeiroIdSelecionado, setBarbeiroIdSelecionado] = useState<
     number | null
   >(null);
+  const [tituloInicial, setTituloInicial] = useState<string>("");
+  const [descricaoInicial, setDescricaoInicial] = useState<string>("");
+  const [modoEdicaoTitulo, setModoEdicaoTitulo] = useState(false);
+  const [modoEdicaoDescricao, setModoEdicaoDescricao] = useState(false);
+  const [novoTitulo, setNovoTitulo] = useState(tituloInicial);
+  const [novaDescricao, setNovaDescricao] = useState(descricaoInicial);
+
   const [servicoEmEdicao, setServicoEmEdicao] = useState<number | null>(null);
   const [novoValor, setNovoValor] = useState<string>("");
   const [novaDuracao, setNovaDuracao] = useState<string>("");
@@ -262,6 +269,100 @@ const AdministradorPage = () => {
       });
   };
 
+  const handlePaginaInicialClick = () => {
+    axios
+      .get("http://localhost:3001/buscar-titulo-inicial")
+      .then((responseTitulo) => {
+        const fetchedTituloInicial = responseTitulo.data.tituloInicial || "";
+        setTituloInicial(fetchedTituloInicial);
+      })
+      .catch((errorTitulo) => {
+        console.error("Erro ao buscar o título inicial:", errorTitulo);
+      });
+
+    axios
+      .get("http://localhost:3001/buscar-descricao-inicial")
+      .then((responseDescricao) => {
+        const fetchedDescricaoInicial = responseDescricao.data.descricao || "";
+        setDescricaoInicial(fetchedDescricaoInicial);
+      })
+      .catch((errorDescricao) => {
+        console.error("Erro ao buscar a descrição inicial:", errorDescricao);
+      });
+
+    setSecaoAtiva("pagina-inicial");
+  };
+
+  const handleEditarTitulo = () => {
+    setModoEdicaoTitulo(true);
+  };
+
+  const handleCancelarEdicaoTitulo = () => {
+    setModoEdicaoTitulo(false);
+    setNovoTitulo(tituloInicial);
+  };
+
+  const handleSalvarEdicaoTitulo = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/editar-titulo-inicial",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ novoTitulo }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao editar título inicial: ${response.status}`);
+      }
+
+      setModoEdicaoTitulo(false);
+      setTituloInicial(novoTitulo);
+      toast.success("Título inicial editado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar edição de título inicial:", error);
+      toast.error("Erro ao salvar edição de título inicial.");
+    }
+  };
+
+  const handleEditarDescricao = () => {
+    setModoEdicaoDescricao(true);
+  };
+
+  const handleCancelarEdicaoDescricao = () => {
+    setModoEdicaoDescricao(false);
+    setNovaDescricao(descricaoInicial);
+  };
+
+  const handleSalvarEdicaoDescricao = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/editar-descricao-inicial",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ novaDescricao }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao editar descrição inicial: ${response.status}`);
+      }
+
+      setModoEdicaoDescricao(false);
+      setDescricaoInicial(novaDescricao);
+      toast.success("Descrição inicial editada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar edição de descrição inicial:", error);
+      toast.error("Erro ao salvar edição de descrição inicial.");
+    }
+  };
+
   return (
     <DivAdministrador>
       <Header></Header>
@@ -269,7 +370,7 @@ const AdministradorPage = () => {
       <DivBotoes>
         <Botoes onClick={handleEquipeClick}>Equipe</Botoes>
         <Botoes onClick={handleServicosClick}>Serviços</Botoes>
-        <Botoes>Página Inicial</Botoes>
+        <Botoes onClick={handlePaginaInicialClick}>Página Inicial</Botoes>
         <Botoes onClick={handleResumoClick}>Resumo financeiro</Botoes>
       </DivBotoes>
       {secaoAtiva === "servicos" && servicosData.length > 0 && (
@@ -504,6 +605,70 @@ const AdministradorPage = () => {
           </TabelaResumoAdministrador>
         </DivResumoFinanceiroAdministrador>
       )}
+      {secaoAtiva === "pagina-inicial" && (
+        <div>
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              marginBottom: "10px",
+              position: "relative",
+            }}
+          >
+            {modoEdicaoTitulo ? (
+              <>
+                <textarea
+                  value={novoTitulo}
+                  onChange={(e) => setNovoTitulo(e.target.value)}
+                />
+                <button onClick={handleCancelarEdicaoTitulo}>Cancelar</button>
+                <button onClick={handleSalvarEdicaoTitulo}>Salvar</button>
+              </>
+            ) : (
+              <>
+                <h2>{tituloInicial}</h2>
+                <button
+                  style={{ position: "absolute", top: "5px", right: "5px" }}
+                  onClick={handleEditarTitulo}
+                >
+                  Editar
+                </button>
+              </>
+            )}
+          </div>
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              position: "relative",
+            }}
+          >
+            {modoEdicaoDescricao ? (
+              <>
+                <textarea
+                  value={novaDescricao}
+                  onChange={(e) => setNovaDescricao(e.target.value)}
+                />
+                <button onClick={handleCancelarEdicaoDescricao}>
+                  Cancelar
+                </button>
+                <button onClick={handleSalvarEdicaoDescricao}>Salvar</button>
+              </>
+            ) : (
+              <>
+                <p>{descricaoInicial}</p>
+                <button
+                  style={{ position: "absolute", top: "5px", right: "5px" }}
+                  onClick={handleEditarDescricao}
+                >
+                  Editar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       <DivFooterAdministrador>
         <Footer></Footer>
       </DivFooterAdministrador>
