@@ -269,6 +269,7 @@ const AdministradorPage = () => {
       <DivBotoes>
         <Botoes onClick={handleEquipeClick}>Equipe</Botoes>
         <Botoes onClick={handleServicosClick}>Serviços</Botoes>
+        <Botoes>Página Inicial</Botoes>
         <Botoes onClick={handleResumoClick}>Resumo financeiro</Botoes>
       </DivBotoes>
       {secaoAtiva === "servicos" && servicosData.length > 0 && (
