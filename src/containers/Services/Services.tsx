@@ -1,46 +1,47 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import {
+  DescricaoServico,
   ServiceColumn,
   ServicesColumns,
   ServicesContainer,
   ServicesTitle,
+  TituloServico,
 } from "./ServicesStyle";
+import { Service } from "../../types/types";
 
 const Services: FunctionComponent = () => {
+  const [services, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/servicos");
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error(`Erro ${response.status} ao buscar os serviços`);
+          return;
+        }
+
+        setServices(data);
+      } catch (error) {
+        console.error("Erro ao buscar os serviços", error);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   return (
     <ServicesContainer>
       <ServicesTitle>Serviços</ServicesTitle>
       <ServicesColumns>
-        <ServiceColumn>
-          <h2>Cortes</h2>
-          <p>
-            Cortar o cabelo é como dar um upgrade no estilo e na autoestima! Dos
-            clássicos atemporais aos degradês descolados, tanto homens quanto
-            mulheres sabem: é no corte que a personalidade ganha vida. Então,
-            escolha o seu, arrase e mostre ao mundo a sua melhor versão, de
-            ponta a ponta!
-          </p>
-        </ServiceColumn>
-        <ServiceColumn>
-          <h2>Barba</h2>
-          <p>
-            Do estilo clássico barbudo ao visual moderno com contornos precisos,
-            os homens sabem que cada pelo conta uma história. Deixe crescer,
-            apare os detalhes e exiba com confiança a sua melhor versão, com uma
-            barba que é puro estilo e personalidade!
-          </p>
-        </ServiceColumn>
-        <ServiceColumn>
-          <h2>Sobrancelha</h2>
-          <p>
-            As sobrancelhas, ah, essas molduras naturais para os olhos, têm o
-            poder de transformar o seu rosto. Seja no formato arqueado que
-            remete ao clássico ou no estilo mais natural e despojado, elas
-            expressam sua essência. Cuide, modele e mostre ao mundo o olhar
-            único que revela a sua melhor versão, com sobrancelhas que são o
-            toque final de autenticidade e charme!
-          </p>
-        </ServiceColumn>
+        {services.map((service) => (
+          <ServiceColumn key={service.idserviço}>
+            <TituloServico>{service.nome}</TituloServico>
+            <DescricaoServico>{service.descricaoservico}</DescricaoServico>
+          </ServiceColumn>
+        ))}
       </ServicesColumns>
     </ServicesContainer>
   );

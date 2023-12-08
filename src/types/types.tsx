@@ -17,3 +17,11 @@ export type Agendamento = {
   forma_pagamento: string;
   status: string;
 };
+
+export interface Service {
+  idserviço: number;
+  nome: string;
+  valor: string;
+  duração: string;
+  descricaoservico: string;
+}

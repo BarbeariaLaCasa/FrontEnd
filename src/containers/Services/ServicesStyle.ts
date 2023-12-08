@@ -33,3 +33,16 @@ export const ServiceColumn = styled.div`
     padding: 30px;
   }
 `;
+
+export const TituloServico = styled.h1`
+  font-size: 25px;
+  margin-top: -10px;
+`;
+
+export const DescricaoServico = styled.p`
+  font-size: 10px;
+  text-align: justify;
+  margin-top: -20px;
+  max-width: 400px;
+  margin: 0 auto;
+`;
