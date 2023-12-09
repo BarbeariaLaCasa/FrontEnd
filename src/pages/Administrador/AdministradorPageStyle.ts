@@ -56,17 +56,112 @@ export const TextConteudoServico = styled.text`
   color: ${colorsVariables.goldDark};
   font-weight: normal;
   font-size: 18px;
+  display: block;
+`;
+
+export const TituloConteudoServico = styled.p`
+  font-size: bold;
 `;
 
 export const DivBotaoServico = styled.div`
   margin: 10px;
-  margin-left: 33%;
+  margin-left: 25%;
 `;
 
 export const BotaoEditarServico = styled.button`
   margin: 5px;
   padding: 5px 10px;
   border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoExcluirServico = styled.button`
+  margin: 5px;
+  margin-left: 5%;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoNovoServico = styled.button`
+  margin-top: 35px;
+  margin-left: 10%;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const DivNovoServico = styled.div`
+  display: flex;
+  margin-right: 50px;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  flex-direction: column;
+`;
+
+export const FormNovoServico = styled.form`
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+export const LabelNovoServico = styled.label`
+  font-size: 20px;
+  font-weight: bold;
+  color: ${colorsVariables.goldDark};
+  margin-bottom: 5px;
+`;
+
+export const InputNovoServico = styled.input`
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 14px;
+  border: 2px solid ${colorsVariables.goldDark};
+  border-radius: 4px;
+
+  &:focus {
+    outline: none;
+    border-color: ${colorsVariables.goldMedium};
+  }
+`;
+
+export const TextAreaNovoServico = styled.textarea`
+  color: ${colorsVariables.goldDark};
+  border: 2px solid ${colorsVariables.goldDark};
+  font-weight: normal;
+  font-size: 18px;
+  display: block;
+  margin-bottom: 10px;
+`;
+
+export const DivBotaoNovoServico = styled.div`
+  margin-top: 0px;
+  margin-left: -1px;
+`;
+
+export const BotaoSalvarNovoServico = styled.button`
+  margin: 5px;
+  margin-right: 10px;
+  margin-left: 0px;
+  border-radius: 5px;
+  padding: 5px;
+  border: 2px solid ${colorsVariables.goldDark};
+  background-color: ${colorsVariables.lightGrey};
+  color: ${colorsVariables.goldDark};
+`;
+
+export const BotaoCancelarNovoServico = styled.button`
+  margin: 5px;
+  margin-left: 0px;
+  border-radius: 5px;
+  padding: 5px;
   border: 2px solid ${colorsVariables.goldDark};
   background-color: ${colorsVariables.lightGrey};
   color: ${colorsVariables.goldDark};

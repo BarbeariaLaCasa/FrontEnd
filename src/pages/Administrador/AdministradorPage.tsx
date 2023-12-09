@@ -10,35 +10,44 @@ import {
   BotaoAdicionarNovoBarbeiro,
   BotaoCancelarDescricao,
   BotaoCancelarEdicao,
+  BotaoCancelarNovoServico,
   BotaoCancelarTitulo,
   BotaoEditarDescricao,
   BotaoEditarServico,
   BotaoEditarTitulo,
   BotaoExcluirBarbeiroAdministrador,
+  BotaoExcluirServico,
+  BotaoNovoServico,
   BotaoSalvarDescricao,
   BotaoSalvarEdicao,
+  BotaoSalvarNovoServico,
   BotaoSalvarTitulo,
   Botoes,
   DivAdministrador,
   DivBotaoEdicao,
+  DivBotaoNovoServico,
   DivBotaoServico,
   DivBotoes,
   DivEdicao,
   DivEquipeAdministrador,
   DivFooterAdministrador,
   DivFormulario,
+  DivNovoServico,
   DivPaginaInicial,
   DivResumoFinanceiroAdministrador,
   DivServicos,
   DivServicosExibicao,
   DivTextosPaginaInicial,
+  FormNovoServico,
   H2BarbeirosAdministrador,
   H2ResumoFinanceiroAdministrador,
   H2Servicos,
   ImgBarbeiroAdministrador,
   InputAdicaoBarbeiro,
   InputEdicao,
+  InputNovoServico,
   LabelAdicaoBarbeiro,
+  LabelNovoServico,
   LiBarbeirosAdministrador,
   LiServicos,
   NomeAdministrador,
@@ -48,6 +57,7 @@ import {
   TdResumoAdministrador,
   TextAreaAdicaoBarbeiro,
   TextAreaEdicao,
+  TextAreaNovoServico,
   TextConteudoServico,
   TextServicoNome,
   TexteEdicao,
@@ -75,6 +85,7 @@ const AdministradorPage = () => {
   const [servicoEmEdicao, setServicoEmEdicao] = useState<number | null>(null);
   const [novoValor, setNovoValor] = useState<string>("");
   const [novaDuracao, setNovaDuracao] = useState<string>("");
+  const [novaDescricaoServico, setNovaDescricaoServico] = useState<string>("");
 
   const [exibirFormulario, setExibirFormulario] = useState(false);
   const [novoBarbeiro, setNovoBarbeiro] = useState({
@@ -87,6 +98,13 @@ const AdministradorPage = () => {
     fotos_trabalhos: [""],
   });
   const [servicosData, setServicosData] = useState<any[]>([]);
+  const [exibirFormularioServico, setExibirFormularioServico] = useState(false);
+  const [novoNomeServico, setNovoNomeServico] = useState("");
+  const [novoValorServico, setNovoValorServico] = useState("");
+  const [novaDuracaoServico, setNovaDuracaoServico] = useState("");
+  const [novaDescricaoAdicaoServico, setNovaDescricaoAdicaoServico] =
+    useState("");
+
   const [resumoFinanceiro, setResumoFinanceiro] = useState<any[]>([]);
   const [barbeiroNomes, setBarbeiroNomes] = useState({});
   const [secaoAtiva, setSecaoAtiva] = useState("equipe");
@@ -223,9 +241,15 @@ const AdministradorPage = () => {
       });
   };
 
+  const converterParaMinutos = (duracao: {
+    split: (arg0: string) => [any, any, any];
+  }) => {
+    const [horas, minutos, segundos] = duracao.split(":");
+    return parseInt(horas, 10) * 60 + parseInt(minutos, 10);
+  };
+
   const handleEditarServico = (servicoId: number) => {
     setServicoEmEdicao(servicoId);
-    // Preencha os estados de valor e duração com os valores existentes
     const servicoSelecionado = servicosData.find(
       (servico) => servico.idserviço === servicoId
     );
@@ -236,6 +260,7 @@ const AdministradorPage = () => {
           servicoSelecionado.duração.minutes.toString()) ||
           ""
       );
+      setNovaDescricaoServico(servicoSelecionado.descricaoservico);
     }
   };
 
@@ -243,6 +268,7 @@ const AdministradorPage = () => {
     setServicoEmEdicao(null);
     setNovoValor("");
     setNovaDuracao("");
+    setNovaDescricaoServico("");
   };
 
   const handleSalvarEdicao = () => {
@@ -251,6 +277,7 @@ const AdministradorPage = () => {
         .put(`http://localhost:3001/servicos/${servicoEmEdicao}`, {
           valor: novoValor,
           duração: novaDuracao,
+          descricaoservico: novaDescricaoServico,
         })
         .then((response) => {
           toast.success("Serviço atualizado com sucesso!");
@@ -265,6 +292,7 @@ const AdministradorPage = () => {
     setServicoEmEdicao(null);
     setNovoValor("");
     setNovaDuracao("");
+    setNovaDescricaoServico("");
   };
 
   const handleResumoClick = () => {
@@ -373,6 +401,51 @@ const AdministradorPage = () => {
     }
   };
 
+  const handleNovoServicoClick = () => {
+    setExibirFormularioServico(true);
+    setServicoEmEdicao(null);
+    setNovoValor("");
+    setNovaDuracao("");
+    setNovaDescricaoServico("");
+  };
+
+  const handleAdicionarServico = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:3001/adicionar-servico", {
+        nome: novoNomeServico,
+        valor: novoValorServico,
+        duracao: novaDuracaoServico,
+        descricaoServico: novaDescricaoAdicaoServico,
+      })
+      .then((response) => {
+        setExibirFormularioServico(false);
+        handleServicosClick();
+      })
+      .catch((error) => {
+        console.error("Erro ao adicionar serviço:", error);
+      });
+  };
+
+  const handleExcluirServico = async (servicoId: number) => {
+    if (window.confirm("Tem certeza de que deseja excluir este serviço?")) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3001/excluir-servico/${servicoId}`
+        );
+        if (response.status === 200) {
+          toast.success("Serviço excluído com sucesso!");
+          handleServicosClick();
+        } else {
+          toast.error("Erro ao excluir serviço.");
+        }
+      } catch (error) {
+        console.error("Erro ao excluir serviço:", error);
+        toast.error("Erro ao excluir serviço.");
+      }
+    }
+  };
+
   return (
     <DivAdministrador>
       <Header></Header>
@@ -403,6 +476,12 @@ const AdministradorPage = () => {
                       value={novaDuracao}
                       onChange={(e) => setNovaDuracao(e.target.value)}
                     />
+                    <TexteEdicao>Nova Descrição:</TexteEdicao>
+                    <InputEdicao
+                      type="text"
+                      value={novaDescricaoServico}
+                      onChange={(e) => setNovaDescricaoServico(e.target.value)}
+                    />
                     <DivBotaoEdicao>
                       <BotaoCancelarEdicao onClick={handleCancelarEdicao}>
                         Cancelar
@@ -414,12 +493,20 @@ const AdministradorPage = () => {
                   </DivEdicao>
                 ) : (
                   <DivServicosExibicao>
-                    <TextServicoNome>{servico.nome} - </TextServicoNome>{" "}
+                    <TextServicoNome>{servico.nome}</TextServicoNome>{" "}
                     <TextConteudoServico>
-                      Valor: R$ {servico.valor}, Duração:{" "}
-                      {servico.duração && servico.duração
-                        ? servico.duração + " min"
-                        : "Não especificada"}
+                      <p>
+                        <strong>Valor</strong>: R$ {servico.valor}
+                      </p>
+                      <p>
+                        <strong>Duração:</strong>:{" "}
+                        {servico.duração
+                          ? `${converterParaMinutos(servico.duração)} min`
+                          : "Não especificada"}
+                      </p>
+                      <p>
+                        <strong>Descrição</strong>: {servico.descricaoservico}
+                      </p>
                     </TextConteudoServico>
                     <DivBotaoServico>
                       <BotaoEditarServico
@@ -427,12 +514,65 @@ const AdministradorPage = () => {
                       >
                         Editar
                       </BotaoEditarServico>
+                      <BotaoExcluirServico
+                        onClick={() => handleExcluirServico(servico.idserviço)}
+                      >
+                        Excluir
+                      </BotaoExcluirServico>
                     </DivBotaoServico>
                   </DivServicosExibicao>
                 )}
               </LiServicos>
             ))}
           </UlServicos>
+          <BotaoNovoServico onClick={handleNovoServicoClick}>
+            Novo Serviço
+          </BotaoNovoServico>
+          {exibirFormularioServico && (
+            <DivNovoServico>
+              <FormNovoServico onSubmit={handleAdicionarServico}>
+                <LabelNovoServico>Nome do Serviço:</LabelNovoServico>
+                <InputNovoServico
+                  type="text"
+                  value={novoNomeServico}
+                  onChange={(e) => setNovoNomeServico(e.target.value)}
+                />
+
+                <LabelNovoServico>Valor:</LabelNovoServico>
+                <InputNovoServico
+                  type="text"
+                  value={novoValorServico}
+                  onChange={(e) => setNovoValorServico(e.target.value)}
+                />
+
+                <LabelNovoServico>Duração:</LabelNovoServico>
+                <InputNovoServico
+                  type="text"
+                  value={novaDuracaoServico}
+                  onChange={(e) => setNovaDuracaoServico(e.target.value)}
+                />
+
+                <LabelNovoServico>Descrição do Serviço:</LabelNovoServico>
+                <TextAreaNovoServico
+                  value={novaDescricaoAdicaoServico}
+                  onChange={(e) =>
+                    setNovaDescricaoAdicaoServico(e.target.value)
+                  }
+                />
+                <DivBotaoNovoServico>
+                  <BotaoSalvarNovoServico type="submit">
+                    Salvar
+                  </BotaoSalvarNovoServico>
+                  <BotaoCancelarNovoServico
+                    type="button"
+                    onClick={() => setExibirFormularioServico(false)}
+                  >
+                    Cancelar
+                  </BotaoCancelarNovoServico>
+                </DivBotaoNovoServico>
+              </FormNovoServico>
+            </DivNovoServico>
+          )}
         </DivServicos>
       )}
 
