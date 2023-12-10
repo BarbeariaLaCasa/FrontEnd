@@ -11,13 +11,15 @@ export const CabecalhoChild = styled.div`
 `;
 
 export const Logo = styled.img`
-  position: inherit;
+  z-index: 1;
+  position: relative;
   width: 5%;
   border-radius: 50%;
 `;
+
 export const Login = styled.b`
   position: absolute;
-  top: 100%;
+  top: 50%;
   right: 80px;
   display: flex;
   align-items: center;
@@ -31,6 +33,6 @@ export const Login = styled.b`
 export const CabecalhoRoot = styled.div`
   position: relative;
   width: 100%;
-  height: 29px;
+  height: 60px;
   text-align: center;
 `;

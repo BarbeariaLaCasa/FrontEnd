@@ -11,16 +11,16 @@ export const RegistrationPageWrapper = styled.div`
 
 export const RegistrationForm = styled.form`
   display: flex;
-  align-items: center; /* Alinha os elementos verticalmente no centro */
+  align-items: center;
   text-align: center;
   box-shadow: 0 0 10px ${colorsVariables.boxShadow};
 `;
 
 export const RegistrationContent = styled.div`
   display: flex;
-  flex-direction: column; /* Coloca os elementos em uma coluna */
-  align-items: flex-start; /* Alinha os elementos à esquerda */
-  margin-left: 20px; /* Espaçamento à esquerda para separar o logo */
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 20px;
 `;
 
 export const RegistrationTitle = styled.h2`
@@ -31,7 +31,7 @@ export const RegistrationTitle = styled.h2`
 export const RegistrationImage = styled.img`
   width: 150px;
   margin-right: 60px;
-  margin-bottom: 20px;
+  margin-bottom: 70px;
   border-radius: 50%;
 `;
 

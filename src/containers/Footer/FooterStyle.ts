@@ -29,6 +29,7 @@ export const SocialLinkItem = styled.li`
 export const Iframe = styled.iframe`
   width: 280px;
   height: 230px;
+  margin-left: 10px;
   border: 0;
   margin-top: 20px;
 `;

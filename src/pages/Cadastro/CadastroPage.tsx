@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logoBarbearia.jpg";
 import {
   RegistrationButton,
@@ -86,7 +86,9 @@ const RegisterPage = () => {
   return (
     <RegistrationPageWrapper>
       <RegistrationForm>
-        <RegistrationImage src={logo} alt="Imagem de Cadastro" />
+        <Link to="/">
+          <RegistrationImage src={logo} alt="Imagem de Cadastro" />
+        </Link>
         <RegistrationContent>
           <RegistrationTitle>Cadastro</RegistrationTitle>
           {registroSucesso ? (

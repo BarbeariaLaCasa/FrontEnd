@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { format } from "date-fns";
 import {
   BotoesAgendamentoAceitar,
   BotoesAgendamentoRecusar,
@@ -205,9 +206,9 @@ const BarbeiroPage = () => {
                   <PQuadroAgendamento>
                     Data:{" "}
                     <TextAgendamentoConteudo>
-                      {agendamento.data}
+                      {format(new Date(agendamento.data), "dd/MM/yyyy")}
                     </TextAgendamentoConteudo>
-                  </PQuadroAgendamento>
+                  </PQuadroAgendamento>{" "}
                   <PQuadroAgendamento>
                     Valor:
                     <TextAgendamentoConteudo>

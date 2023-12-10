@@ -15,7 +15,7 @@ export const NomeAdministrador = styled.h1`
 
 export const DivBotoes = styled.div`
   margin-top: 30px;
-  margin-left: 39%;
+  margin-left: 35%;
 `;
 
 export const Botoes = styled.button`
@@ -288,7 +288,7 @@ export const BotaoAdicionarBarbeiroAdministrador = styled.button`
 
 export const DivFormulario = styled.div`
   margin: 30px;
-  margin-left: 33%;
+  margin-left: 3%;
 `;
 
 export const LabelAdicaoBarbeiro = styled.label`

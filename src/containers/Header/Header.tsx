@@ -18,7 +18,9 @@ const Header: FunctionComponent = () => {
   return (
     <CabecalhoRoot>
       <CabecalhoChild />
-      <Logo alt="Logo da Barbearia" src={logo} />
+      <Link to="/">
+        <Logo alt="Logo da Barbearia" src={logo} />
+      </Link>
       <Login>
         <motion.li whileTap={{ scale: 1.1 }}>
           {location.pathname.startsWith("/user") ||

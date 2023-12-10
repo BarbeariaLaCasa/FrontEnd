@@ -25,7 +25,7 @@ export const LoginTitle = styled.h2`
 export const LoginImage = styled.img`
   width: 150px;
   margin-right: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 70px;
   border-radius: 50%;
 `;
 
@@ -49,4 +49,8 @@ export const LoginButton = styled.button`
 
 export const SignUpLink = styled.p`
   margin-top: 10px;
+`;
+
+export const linkStyle = styled.link`
+  color: ${colorsVariables.goldMedium};
 `;

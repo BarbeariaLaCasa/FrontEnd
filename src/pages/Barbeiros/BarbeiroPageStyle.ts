@@ -40,20 +40,22 @@ export const H2AgendamentosBarbeiro = styled.h2`
 `;
 
 export const DivUlBarbeiros = styled.div`
-  margin-left: 35%;
+  margin-left: 1%;
 `;
 
 export const UlBarbeiros = styled.ul`
-  liststyle: none;
+  list-style: none;
   display: flex;
-  margin-left: -70px;
+  flex-wrap: wrap;
 `;
 
 export const QuadradoAgendamento = styled.div`
   border: 3px solid ${colorsVariables.goldDark};
   padding: 10px;
   margin: 10px;
-  display: inline-block;
+  flex: 0 0 calc(25% - 20px);
+  box-sizing: border-box;
+  box-shadow: 0 4px 8px ${colorsVariables.boxShadow};
 `;
 
 export const PQuadroAgendamento = styled.p`

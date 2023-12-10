@@ -19,6 +19,7 @@ const LoginPage: React.FC = () => {
 
   const linkStyle = {
     color: "inherit",
+    fontWeight: "bold",
   };
 
   const setAdministrador = async () => {
@@ -95,8 +96,9 @@ const LoginPage: React.FC = () => {
 
   return (
     <LoginPageWrapper>
-      <LoginImage src={logo} alt="Logo barbearia" />
-
+      <Link to="/">
+        <LoginImage src={logo} alt="Logo barbearia" />
+      </Link>
       <LoginForm onSubmit={handleLogin}>
         {erro && <p className="erro">{erro}</p>}
         <LoginInput
